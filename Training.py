@@ -145,26 +145,31 @@ model.add(LSTM(64, return_sequences=False, activation='relu'))
 #adds dense layer with 64 nodes uses relu activation
 model.add(Dense(64, activation='relu'))
 model.add(Dense(32, activation="relu"))
-#adds dense layer with softmax activation to output action
+#activate returns values with a probability between 0.0 and 1.0 and sum of the values adds up to 1
 model.add(Dense(actions.shape[0], activation='softmax'))
 
-#compiles model using categorical_crossentropy due to 
+#compiles model using categorical_crossentropy due to multiple features being used
 model.compile(optimizer='Adam', loss='categorical_crossentropy', metrics=['categorical_accuracy'])
-model.fit(X_train, y_train, epochs = 1000, callbacks = [earlystopping]) #Do not specify the batch_size if your data is in the form of a dataset, generators, or keras.utils.Sequence instances
+#trains the model
+#do not specify the batch_size if your data is in the form of a dataset, generators, or keras.utils.Sequence instances
+model.fit(X_train, y_train, epochs = 1000, callbacks = [earlystopping]) 
 
+#sets currentDateTime for file naming
 currentDateTime = datetime
-
+#saves model
 model.save(f'{currentDateTime}_action.h5')
 
+#sets yhat from prediction on X_test
 yhat = model.predict(X_test)
 
 ytrue = np.argmax(y_test, axis=1).tolist()
 yhat = np.argmax(yhat, axis=1).tolist()
 
+#creates confusion matrix
 confusion_matrix = multilabel_confusion_matrix(ytrue, yhat)
-
+#saves confusion matrix
 confusion_matrix.to_csv(f'{currentDateTime}_confusion_matrix')
-
+#creates accuracy score
 accuracy = accuracy_score(ytrue, yhat)
-
+#saves accuracy score
 accuracy.to_csv(f'{currentDateTime}_accuracy')
