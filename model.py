@@ -10,7 +10,7 @@ from datetime import datetime
 
 class YubiModel:
 
-    
+    #constructor
     def __init__(self, desired_length, shape, actions, data_path):
         self.desired_length = desired_length
         self.shape = shape 
@@ -37,7 +37,7 @@ class YubiModel:
         model.compile(optimizer='Adam', loss='categorical_crossentropy', metrics=['categorical_accuracy'])
         return model
 
-    def train_model(self, epochs_amount, videoAmount):
+    def train_model(self, epochs_amount, videoAmount, seed):
         #maps labels to numbers
         label_map = {label:num for num, label in enumerate(self.actions)}
 
@@ -73,7 +73,7 @@ class YubiModel:
 
         #splits dataset in training and test sets
         #random_state sets seed value to allow for comparison of different neural networks
-        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=1337)
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=seed)
 
         #sets path for log file
         log_dir = os.path.join('Logs')

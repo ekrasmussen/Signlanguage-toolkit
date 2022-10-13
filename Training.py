@@ -26,12 +26,17 @@ ACTIONS = np.array(['A', 'B', 'C', 'D', 'E', 'Idle'])
 
 VIDEO_AMOUNT = count_videos(ACTIONS)
 
-#videos should have 40 frames
+#Determents how many frames of the video is used
 DESIRED_LENGTH = 15
 
+#Input amount to the model, 126 inputs if using only hands
 SHAPE = 126
 
+#Amount of epochs used when training
 EPOCHS_AMOUNT = 150
+
+#The seed used when spliting train and test data
+SEED = 1337
 
 
 if __name__ == "__main__":
@@ -40,10 +45,11 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
+    #If you start the program with --extract behind it, it will extract data and train, if you start the program normally you only train.
     if args.extract:
         extract_data(ACTIONS, VIDEO_AMOUNT, DESIRED_LENGTH, DATA_PATH)
         print("extracting data too")
         
     model = YubiModel(DESIRED_LENGTH, SHAPE, ACTIONS, DATA_PATH)
-    model.train_model(EPOCHS_AMOUNT, VIDEO_AMOUNT)
+    model.train_model(EPOCHS_AMOUNT, VIDEO_AMOUNT, SEED)
     
