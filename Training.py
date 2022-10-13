@@ -1,17 +1,5 @@
-from datetime import datetime
-from difflib import restore
-from pickletools import optimize
-import random
-import mediapipe as mp
-import cv2 
 import os
-import numpy as np
 import argparse
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import multilabel_confusion_matrix, accuracy_score
-from tensorflow.keras.utils import to_categorical
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import LSTM, Dense
 from detect import *
 from model import *
 from extract_datapoints import *
