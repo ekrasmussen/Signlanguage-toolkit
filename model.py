@@ -2,6 +2,7 @@ from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import LSTM, Dense
 import numpy as np
 import os
+import pandas as pd
 from tensorflow.keras.utils import to_categorical
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import multilabel_confusion_matrix, accuracy_score
@@ -20,6 +21,7 @@ class YubiModel:
        
     
     def create_model(self):
+
         #sets up sequential layers in neural network
         model = Sequential()
         #adds a LSTM layer with 64 nodes, returns a sequence, uses relu activation, and input shape
@@ -37,7 +39,31 @@ class YubiModel:
         model.compile(optimizer='Adam', loss='categorical_crossentropy', metrics=['categorical_accuracy'])
         return model
 
+    def create_log(self):
+        #Create logs folder if it doesnt exist
+        try:
+            os.makedirs("Logs")
+        except:
+            print("Logs folder already exists. Skipping..")
+        
+        #sets current date and time for file naming
+        now = datetime.now()
+
+        timestamp = now.strftime("%d-%m-%Y %H-%M-%S")
+        
+
+        #creates the folder with corresponding timestamp inside the logs folder
+        try:
+            os.makedirs(f"Logs/{timestamp}")
+        except:
+            print(f"Folder already named {timestamp}, files inside will be overwritten")
+
+        return timestamp
+    
     def train_model(self, epochs_amount, videoAmount, seed):
+        
+        timestamp = self.create_log()
+        
         #maps labels to numbers
         label_map = {label:num for num, label in enumerate(self.actions)}
 
@@ -88,11 +114,8 @@ class YubiModel:
         #do not specify the batch_size if your data is in the form of a dataset, generators, or keras.utils.Sequence instances
         self.model.fit(X_train, y_train, epochs = epochs_amount)
 
-        #sets currentDateTime for file naming
-        currentDateTime = datetime.now()
-        timestamp = datetime.timestamp(currentDateTime)
         #saves model
-        self.model.save(f'{timestamp}_action.h5')
+        self.model.save(f'{timestamp}.h5')
 
         #sets yhat from prediction on X_test
         yhat = self.model.predict(X_test)
@@ -101,14 +124,19 @@ class YubiModel:
         yhat = np.argmax(yhat, axis=1).tolist()
 
         #creates confusion matrix
-            #confusion_matrix = multilabel_confusion_matrix(ytrue, yhat)
-        #saves confusion matrix
-        #confusion_matrix.to_csv(f'{timestamp}_confusion_matrix')
+        confusion_matrix = multilabel_confusion_matrix(ytrue, yhat)
+
+        #convert and save confusion matrix individually by action
+        for matrix in range(0, len(confusion_matrix)):
+            pd.DataFrame(confusion_matrix[matrix]).to_csv(f"Logs/{timestamp}/confusion_matrix_{self.actions[matrix]}.csv", sep=",")
 
         #creates accuracy score
         accuracy = accuracy_score(ytrue, yhat)
-        #saves accuracy score
-        #accuracy.to_csv(f'{timestamp}_accuracy')
+        
+        #saves accuracy score as a simple txt file
+        file = open(f"Logs/{timestamp}/accuracy.txt", "w+")
+        file.write(f"Accuracy: {accuracy}")
+        file.close()
 
 
     
