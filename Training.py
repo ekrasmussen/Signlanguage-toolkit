@@ -40,4 +40,3 @@ if __name__ == "__main__":
         
     model = YubiModel(DESIRED_LENGTH, SHAPE, ACTIONS, DATA_PATH)
     model.train_model(EPOCHS_AMOUNT, VIDEO_AMOUNT, SEED)
-    
