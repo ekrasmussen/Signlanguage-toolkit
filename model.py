@@ -12,16 +12,17 @@ from datetime import datetime
 class YubiModel:
 
     #constructor
-    def __init__(self, desired_length, shape, actions, data_path):
+    def __init__(self, desired_length, shape, actions, data_path, is_test=False):
         self.desired_length = desired_length
         self.shape = shape 
         self.actions = actions
         self.data_path = data_path
         self.model = self.create_model()
+        self.is_test = is_test
+        self.create_log()
+        self.logs_path, self.timestamp = self.make_logs_path()
        
-    
     def create_model(self):
-
         #sets up sequential layers in neural network
         model = Sequential()
         #adds a LSTM layer with 64 nodes, returns a sequence, uses relu activation, and input shape
@@ -39,41 +40,48 @@ class YubiModel:
         model.compile(optimizer='Adam', loss='categorical_crossentropy', metrics=['categorical_accuracy'])
         return model
 
+    def make_logs_path(self):
+        #sets current date and time for file naming
+        now = datetime.now()
+
+        #formats timestamp
+        timestamp = now.strftime("%d-%m-%Y %H-%M-%S")
+        
+        #creates the folder with corresponding timestamp inside the logs folder
+        logs_path = ""
+        if not self.is_test:
+            logs_path = f"Logs/{timestamp}"
+        else:
+            logs_path = f"Logs/{timestamp}_test"
+        
+        try:
+            os.makedirs(logs_path)
+        except:
+            print(f"Folder already named {timestamp}, files inside will be overwritten")
+
+        return logs_path, timestamp
+
+
     def create_log(self):
-        #Create logs folder if it doesnt exist
+        #create logs folder if it doesnt exist
         try:
             os.makedirs("Logs")
         except:
             print("Logs folder already exists. Skipping..")
         
-        #sets current date and time for file naming
-        now = datetime.now()
-
-        timestamp = now.strftime("%d-%m-%Y %H-%M-%S")
-        
-
-        #creates the folder with corresponding timestamp inside the logs folder
-        try:
-            os.makedirs(f"Logs/{timestamp}")
-        except:
-            print(f"Folder already named {timestamp}, files inside will be overwritten")
-
-        return timestamp
     
-    def save_confusion_matrix(self, confusion_matrix, timestamp):
+    def save_confusion_matrix(self, confusion_matrix):
         #convert and save confusion matrix individually by action
         for matrix in range(0, len(confusion_matrix)):
-            pd.DataFrame(confusion_matrix[matrix]).to_csv(f"Logs/{timestamp}/confusion_matrix_{self.actions[matrix]}.csv", sep=",")
+            pd.DataFrame(confusion_matrix[matrix]).to_csv(f"{self.logs_path}/confusion_matrix_{self.actions[matrix]}.csv", sep=",")
 
-    def save_accuracy(self, accuracy, timestamp):
+    def save_accuracy(self, accuracy):
         #saves accuracy score as a simple txt file
-        file = open(f"Logs/{timestamp}/accuracy.txt", "w+")
+        file = open(f"{self.logs_path}/accuracy.txt", "w+")
         file.write(f"Accuracy: {accuracy}")
         file.close()
     
     def train_model(self, epochs_amount, videoAmount, seed):
-        
-        timestamp = self.create_log()
         
         #maps labels to numbers
         label_map = {label:num for num, label in enumerate(self.actions)}
@@ -126,7 +134,7 @@ class YubiModel:
         self.model.fit(X_train, y_train, epochs = epochs_amount)
 
         #saves model
-        self.model.save(f'{timestamp}.h5')
+        self.model.save(f'{self.timestamp}.h5')
 
         #sets yhat from prediction on X_test
         yhat = self.model.predict(X_test)
@@ -136,11 +144,8 @@ class YubiModel:
 
         #creates confusion matrix
         confusion_matrix = multilabel_confusion_matrix(ytrue, yhat)
-        self.save_confusion_matrix(confusion_matrix, timestamp)
+        self.save_confusion_matrix(confusion_matrix, self.timestamp)
 
         #creates accuracy score
         accuracy = accuracy_score(ytrue, yhat)
-        self.save_accuracy(accuracy, timestamp)
-    
-
-   
+        self.save_accuracy(accuracy, self.timestamp)
