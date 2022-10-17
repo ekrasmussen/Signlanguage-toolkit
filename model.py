@@ -60,6 +60,17 @@ class YubiModel:
 
         return timestamp
     
+    def save_confusion_matrix(self, confusion_matrix, timestamp):
+        #convert and save confusion matrix individually by action
+        for matrix in range(0, len(confusion_matrix)):
+            pd.DataFrame(confusion_matrix[matrix]).to_csv(f"Logs/{timestamp}/confusion_matrix_{self.actions[matrix]}.csv", sep=",")
+
+    def save_accuracy(self, accuracy, timestamp):
+        #saves accuracy score as a simple txt file
+        file = open(f"Logs/{timestamp}/accuracy.txt", "w+")
+        file.write(f"Accuracy: {accuracy}")
+        file.close()
+    
     def train_model(self, epochs_amount, videoAmount, seed):
         
         timestamp = self.create_log()
@@ -125,20 +136,11 @@ class YubiModel:
 
         #creates confusion matrix
         confusion_matrix = multilabel_confusion_matrix(ytrue, yhat)
-
-        #convert and save confusion matrix individually by action
-        for matrix in range(0, len(confusion_matrix)):
-            pd.DataFrame(confusion_matrix[matrix]).to_csv(f"Logs/{timestamp}/confusion_matrix_{self.actions[matrix]}.csv", sep=",")
+        self.save_confusion_matrix(confusion_matrix, timestamp)
 
         #creates accuracy score
         accuracy = accuracy_score(ytrue, yhat)
-        
-        #saves accuracy score as a simple txt file
-        file = open(f"Logs/{timestamp}/accuracy.txt", "w+")
-        file.write(f"Accuracy: {accuracy}")
-        file.close()
-
-
+        self.save_accuracy(accuracy, timestamp)
     
 
    
