@@ -7,7 +7,7 @@ from tensorflow.keras.utils import to_categorical
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import multilabel_confusion_matrix, accuracy_score
 from datetime import datetime
-
+from tensorflow.keras.callbacks import EarlyStopping
 
 class YubiModel:
 
@@ -127,11 +127,11 @@ class YubiModel:
         #mode is set to min to stop when val_loss stops descreasing 
         #patience sets number of epochs after which training will be stopped
         #restore_best_weights restores best weights after stopping
-        #earlystopping = callbacks.Earlystopping(monitor = 'val_loss', mode = 'min', patience = 5, restore_best_weights = True)
+        earlystopping = EarlyStopping(monitor = 'loss', min_delta = 0,  patience = 20, verbose = 0, mode = 'auto', baseline = None, restore_best_weights = True)
 
         #trains the model
         #do not specify the batch_size if your data is in the form of a dataset, generators, or keras.utils.Sequence instances
-        self.model.fit(X_train, y_train, epochs = epochs_amount)
+        self.model.fit(X_train, y_train, epochs = epochs_amount, callbacks=earlystopping)
 
         #saves model
         self.model.save(f'{self.timestamp}.h5')
@@ -144,8 +144,8 @@ class YubiModel:
 
         #creates confusion matrix
         confusion_matrix = multilabel_confusion_matrix(ytrue, yhat)
-        self.save_confusion_matrix(confusion_matrix, self.timestamp)
+        self.save_confusion_matrix(confusion_matrix)
 
         #creates accuracy score
         accuracy = accuracy_score(ytrue, yhat)
-        self.save_accuracy(accuracy, self.timestamp)
+        self.save_accuracy(accuracy)
