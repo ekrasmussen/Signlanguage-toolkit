@@ -4,8 +4,6 @@ from detect import *
 from model import *
 from extract_datapoints import *
 
-#from keras.callbacks import TensorBoard, callbacks
-
 #path for exported data
 DATA_PATH = os.path.join('MP_Data')
 
@@ -21,7 +19,7 @@ DESIRED_LENGTH = 15
 SHAPE = 126
 
 #Amount of epochs used when training
-EPOCHS_AMOUNT = 150
+EPOCHS_AMOUNT = 2000
 
 #The seed used when spliting train and test data
 SEED = 1337
