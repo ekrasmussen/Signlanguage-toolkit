@@ -61,6 +61,7 @@ pip install -r requirements.txt
 *recorder is to be implemented soon, a guide will follow*
 
 ## Recorder - GUI
+*Planned Feature*
 
 ## Trainer
 For your training data, create a folder within the parent folder named **"Training_videos"** and create child folders within it named after each of your labels, videos within can be named as you please.
@@ -99,6 +100,7 @@ python Training.py
 **Further customization, like setting epocs, video_length and customizing folders is planned features**
 
 ## Trainer - GUI
+*Planned Feature*
 
 ## Reader
 The reader is launched by using
@@ -109,6 +111,7 @@ python Webcam.py
 which automatically loads a model under a specific name at the moment, this is subject to change very soon.
 
 ## Reader - GUI
+*Planned Feature*
 
 # Roadmap
 - [ ] Beautify Reader GUI
