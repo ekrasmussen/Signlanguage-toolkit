@@ -75,14 +75,13 @@ class YubiModel:
         for matrix in range(0, len(confusion_matrix)):
             pd.DataFrame(confusion_matrix[matrix]).to_csv(f"{self.logs_path}/confusion_matrix_{self.actions[matrix]}.csv", sep=",")
 
-    def save_accuracy(self, accuracy):
+    def save_training_info(self, accuracy, epochs):
         #saves accuracy score as a simple txt file
-        file = open(f"{self.logs_path}/accuracy.txt", "w+")
-        file.write(f"Accuracy: {accuracy}")
+        file = open(f"{self.logs_path}/training_info.txt", "w+")
+        file.write(f"Accuracy: {accuracy}\nDesired lenght: {self.desired_length}\nEpochs: {epochs}")
         file.close()
     
     def train_model(self, epochs_amount, videoAmount, seed):
-        
         #maps labels to numbers
         label_map = {label:num for num, label in enumerate(self.actions)}
 
@@ -131,7 +130,7 @@ class YubiModel:
 
         #trains the model
         #do not specify the batch_size if your data is in the form of a dataset, generators, or keras.utils.Sequence instances
-        self.model.fit(X_train, y_train, epochs = epochs_amount, callbacks=earlystopping)
+        m = self.model.fit(X_train, y_train, epochs = epochs_amount, callbacks=earlystopping)
 
         #saves model
         self.model.save(f'{self.timestamp}.h5')
@@ -142,10 +141,11 @@ class YubiModel:
         ytrue = np.argmax(y_test, axis=1).tolist()
         yhat = np.argmax(yhat, axis=1).tolist()
 
-        #creates confusion matrix
+        #creates and saves confusion matrix
         confusion_matrix = multilabel_confusion_matrix(ytrue, yhat)
         self.save_confusion_matrix(confusion_matrix)
 
-        #creates accuracy score
+        #creates and saves training info
         accuracy = accuracy_score(ytrue, yhat)
-        self.save_accuracy(accuracy)
+        n_epochs = len(m.history['loss'])
+        self.save_training_info(accuracy, n_epochs)
