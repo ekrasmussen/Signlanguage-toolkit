@@ -111,3 +111,10 @@ which automatically loads a model under a specific name at the moment, this is s
 ## Reader - GUI
 
 # Roadmap
+- [ ] Beautify Reader GUI
+- [ ] Create GUI for the trainer, adding ability to customize file paths and training properties
+- [ ] Create Recorder software
+- [ ] Add functionality for Reader to read video files instead of webcam files
+- [ ] Creation of a bigger dataset
+- [ ] Upload of example model for users to test the software without having to train themselves
+- [ ] Create a Web Version
