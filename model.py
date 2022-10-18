@@ -21,6 +21,7 @@ class YubiModel:
         self.is_test = is_test
         self.create_log()
         self.logs_path, self.timestamp = self.make_logs_path()
+        self.n_epochs = 0
        
     def create_model(self):
         #sets up sequential layers in neural network
@@ -38,6 +39,7 @@ class YubiModel:
 
         #compiles model using categorical_crossentropy due to multiple features being used
         model.compile(optimizer='Adam', loss='categorical_crossentropy', metrics=['categorical_accuracy'])
+
         return model
 
     def make_logs_path(self):
@@ -147,5 +149,5 @@ class YubiModel:
 
         #creates and saves training info
         accuracy = accuracy_score(ytrue, yhat)
-        n_epochs = len(m.history['loss'])
-        self.save_training_info(accuracy, n_epochs)
+        self.n_epochs = len(m.history['loss'])
+        self.save_training_info(accuracy, self.n_epochs)
