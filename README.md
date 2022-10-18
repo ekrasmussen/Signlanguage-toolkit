@@ -2,7 +2,7 @@
   
 
 # Danish Sign Language Detection
-*this project is still in development, certain things are subject to change during the course of development. Please read [our roadmap](#Roadmap) for upcoming features and fixes.*
+*this project is still in development, certain things are subject to change during the course of development. Please read [our roadmap](#roadmap) for upcoming features and fixes.*
   
   
 
