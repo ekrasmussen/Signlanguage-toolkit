@@ -82,8 +82,6 @@ if __name__ == "__main__":
     #Add labels argument to list as upper case
     for label in args.Labels:
         labels.append(label.upper())
-
-    print(camera_fps)
     
     create_recordings_folder(output_folder_name)
     create_labels(output_folder_name, labels)
