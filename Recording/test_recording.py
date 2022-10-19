@@ -16,7 +16,7 @@ class TestsForRecording(unittest.TestCase):
         #act
         create_recordings_folder(output)
         create_labels(output, labels)
-        webcam_display(labels, fps, recordtime, breaktime, amount, output)
+        webcam_record(labels, fps, recordtime, breaktime, amount, output)
 
         videoAmount = np.zeros(labels.size, dtype=int)
         i = 0

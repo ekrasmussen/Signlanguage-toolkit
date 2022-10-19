@@ -18,12 +18,14 @@ def setup():
 
     return args
 
+#Creates output folder for recording
 def create_recordings_folder(output_folder_name):
     try:
         os.makedirs(output_folder_name)
     except:
         pass
 
+#Creates labels for videos in output folder
 def create_labels(output_folder_name, labels):
     for label in labels:
         try:
@@ -31,44 +33,50 @@ def create_labels(output_folder_name, labels):
         except:
             pass
 
-def webcam_display(labels, fps, recordtime, breaktime, amount, output):
+#Records webcam
+def webcam_record(labels, fps, recordtime, breaktime, amount, output):
     camera = cv2.VideoCapture(0)
     camera_width = int(camera.get(cv2.CAP_PROP_FRAME_WIDTH))
     camera_height = int(camera.get(cv2.CAP_PROP_FRAME_HEIGHT))
-    
-    if camera.isOpened:
-        
-        for label in labels:
 
+    if camera.isOpened:
+        #Loops through labels in list
+        for label in labels:
+            #Creates a new video 
             for video_number in range(amount):
-                
-                #Create new Video
+                #VideoWriter writes to storage
                 #Uses parameters: path for videos, video codec, frame rate, and image dimensions
                 result = cv2.VideoWriter(f"{output}/{label}/{video_number}.mp4", cv2.VideoWriter.fourcc('m','p','4','v'), fps, (camera_width, camera_height))
-                
+                #Loops through frames of video
                 for frame in range(recordtime + breaktime):
+                    #Gets boolean and frame
                     ret, image = camera.read()
                     if ret:
-                        
+                        #If anything is captured
                         #Save the image before processing with graphics
                         if frame > breaktime:
                             result.write(image)
-                            #graphics
+                            #Graphics for recording
                             image = cv2.putText(image, f"Recording: {label}", (50, 50), cv2.FONT_HERSHEY_COMPLEX, 1, (255, 0, 0), 2, cv2.LINE_AA)
                         else:
-                            #graphics
+                            #Graphics before recording letting the user know what to sign next
                             image = cv2.putText(image, f"Get ready for: {label}", (50, 50), cv2.FONT_HERSHEY_COMPLEX, 1, (255, 0, 0), 2, cv2.LINE_AA)
 
-
+                        #Displays webcam to user with graphics
                         cv2.imshow("Recording Window", image)
+                        #Breaks with 'Esc' key
                         if cv2.waitKey(1) == 27:
                             break
+                #Releases the VideoWriter
                 result.release()
+    #Releases the webcam
     camera.release()
+    #Destroys all windows opened by program
     cv2.destroyAllWindows()
 
-
+#If script is executed from command line
 if __name__ == "__main__":
+    #Sets up args through parser
     args = setup()
 
     #Assign values to their global variable
@@ -83,7 +91,8 @@ if __name__ == "__main__":
     for label in args.Labels:
         labels.append(label.upper())
     
+    #Sets up folders
     create_recordings_folder(output_folder_name)
     create_labels(output_folder_name, labels)
-    
-    webcam_display(labels, camera_fps, recording_frames_amount, break_time, video_amount, output_folder_name)
+    #Calls recording function
+    webcam_record(labels, camera_fps, recording_frames_amount, break_time, video_amount, output_folder_name)
