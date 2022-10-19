@@ -18,13 +18,13 @@ def setup():
 
     return args
 
-def create_recordings_folder():
+def create_recordings_folder(output_folder_name):
     try:
         os.makedirs(output_folder_name)
     except:
         pass
 
-def create_labels(labels):
+def create_labels(output_folder_name, labels):
     for label in labels:
         try:
             os.makedirs(f"{output_folder_name}/{label}")
@@ -43,8 +43,8 @@ def webcam_display(labels, fps, recordtime, breaktime, amount, output):
             for video_number in range(amount):
                 
                 #Create new Video
-                result = cv2.VideoWriter(f"{output}/{label}/{video_number}.mp4", cv2.VideoWriter.fourcc(*'MP4V'), fps, (camera_width, camera_height))
-                
+                #Uses parameters: path for videos, video codec, frame rate, and image dimensions
+                result = cv2.VideoWriter(f"{output}/{label}/{video_number}.mp4", cv2.VideoWriter.fourcc('m','p','4','v'), fps, (camera_width, camera_height))
                 
                 for frame in range(recordtime + breaktime):
                     ret, image = camera.read()
@@ -54,10 +54,10 @@ def webcam_display(labels, fps, recordtime, breaktime, amount, output):
                         if frame > breaktime:
                             result.write(image)
                             #graphics
-                            image = cv2.putText(image, "recording", (50, 50), cv2.FONT_HERSHEY_COMPLEX, 1, (255, 0, 0), 2, cv2.LINE_AA)
+                            image = cv2.putText(image, f"Recording: {label}", (50, 50), cv2.FONT_HERSHEY_COMPLEX, 1, (255, 0, 0), 2, cv2.LINE_AA)
                         else:
                             #graphics
-                            image = cv2.putText(image, "break time!", (50, 50), cv2.FONT_HERSHEY_COMPLEX, 1, (255, 0, 0), 2, cv2.LINE_AA)
+                            image = cv2.putText(image, f"Get ready for: {label}", (50, 50), cv2.FONT_HERSHEY_COMPLEX, 1, (255, 0, 0), 2, cv2.LINE_AA)
 
 
                         cv2.imshow("Recording Window", image)
@@ -85,7 +85,7 @@ if __name__ == "__main__":
 
     print(camera_fps)
     
-    create_recordings_folder()
-    create_labels(labels)
+    create_recordings_folder(output_folder_name)
+    create_labels(output_folder_name, labels)
     
     webcam_display(labels, camera_fps, recording_frames_amount, break_time, video_amount, output_folder_name)
