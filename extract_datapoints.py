@@ -48,7 +48,6 @@ def extract_data(actions, videoAmount, desired_length, data_path):
                     cap = cv2.VideoCapture(f'Training_videos\{action}\{video}')
                     #counts amount of frames in video
                     video_length = cap.get(cv2.CAP_PROP_FRAME_COUNT)
-                    #print("video length: " + str(video_length))
                     #if video is shorter than desired amount of frames start frame is set to 0
                     if desired_length >= video_length:
                         start = 0
@@ -61,10 +60,8 @@ def extract_data(actions, videoAmount, desired_length, data_path):
                     cap.set(cv2.CAP_PROP_POS_FRAMES, start)
                     #goes through frames
                     for frame_num in range(desired_length):
-                        #print("frame_num: " + str(frame_num))
                         #uses read to get frame
                         has_frame, frame = cap.read()
-                        #print(frame)
                         #if no frame exists, fill in blank
                         if not has_frame:
                             frame = cv2.imread('black.png')
@@ -81,10 +78,8 @@ def extract_data(actions, videoAmount, desired_length, data_path):
                         
                         #saves numpy array with keypoints
                         np.save(npy_path, keypoints)
-                        #print(npy_path)
                     bar.next()
                     video_number += 1
-                    #print(video_number)
 
                     #releases the videocapture
                     cap.release()
