@@ -6,11 +6,11 @@ import random
 from detect import *
 
 def count_videos(actions):
+    print("Counting Videos...")
     videoAmount = np.zeros(actions.size, dtype=int)
     i = 0
     for action in actions:
         videoAmount[i] = len(os.listdir(f'Training_videos\{action}'))
-        print(videoAmount[i])
         i += 1
     return videoAmount
 
@@ -39,6 +39,7 @@ def extract_data(actions, videoAmount, desired_length, data_path):
             video_list = os.listdir(f'Training_videos\{action}')
 
             video_number = 0
+
             #goes through the list of videos
             for video in video_list:
                 #grabs video

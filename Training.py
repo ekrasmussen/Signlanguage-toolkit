@@ -5,6 +5,7 @@ from detect import *
 from model import *
 from extract_datapoints import *
 import tkinter as tk
+from threading import Thread
 
 #path for exported data
 data_path= os.path.join('MP_Data')
@@ -56,6 +57,7 @@ def select_directory():
 def gui():
     root = tk.Tk()
     
+
     labelx = 50
     spinboxx = 200
 
@@ -64,10 +66,7 @@ def gui():
 
     canvas = tk.Canvas(root, width=400, height=300)
     canvas.pack()
-
-    #Button for starting the process
-    start_button = tk.Button(root, text="Start", font=('Arial', 10), command=lambda : start(check_box_extract_value, clicked, desired_length, desired_epochs, desired_seed))
-    canvas.create_window(370, 260, window=start_button, anchor=tk.E)
+    
 
     #Label that shows directory
     global label_directory_text
@@ -120,6 +119,13 @@ def gui():
     spinbox_seed = tk.Spinbox(root,textvariable=desired_seed, from_= 1, to=100000)
     canvas.create_window(spinboxx,150, window=spinbox_seed, anchor=tk.W)
 
+    #Create a Thread for the start method (to avoid hanging the gui when the training/extraction starts)
+    thread = Thread(target=start, args=(check_box_extract_value, clicked, desired_length, desired_epochs, desired_seed))
+    
+    #Button for starting the process assigned to thread
+    start_button = tk.Button(root, text="Start", font=('Arial', 10), command=lambda : thread.start())
+    canvas.create_window(370, 260, window=start_button, anchor=tk.E)
+    
     root.mainloop()
 
 
