@@ -75,10 +75,10 @@ class YubiModel:
         for matrix in range(0, len(confusion_matrix)):
             pd.DataFrame(confusion_matrix[matrix]).to_csv(f"{self.logs_path}/confusion_matrix_{self.actions[matrix]}.csv", sep=",")
 
-    def save_training_info(self, accuracy, epochs):
+    def save_training_info(self, accuracy, epochs, seed):
         #saves accuracy score as a simple txt file
         file = open(f"{self.logs_path}/training_info.txt", "w+")
-        file.write(f"Accuracy: {accuracy}\nDesired lenght: {self.desired_length}\nEpochs: {epochs}")
+        file.write(f"Accuracy: {accuracy}\nDesired length: {self.desired_length}\nEpochs: {epochs}\nSeed: {seed}")
         file.close()
     
     def train_model(self, epochs_amount, videoAmount, seed):
@@ -148,4 +148,4 @@ class YubiModel:
         #creates and saves training info
         accuracy = accuracy_score(ytrue, yhat)
         n_epochs = len(m.history['loss'])
-        self.save_training_info(accuracy, n_epochs)
+        self.save_training_info(accuracy, n_epochs, seed)
