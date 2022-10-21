@@ -101,7 +101,7 @@ class Gui:
             model = YubiModel(desired_length, self.shape, actions, self.data_path)
             model.train_model(epochs_amount, videos, seed, self.stop_event)
         except:
-            print('Check your values!')
+            print('Error! Something went wrong.')
 
     def select_directory(self):
         directory = filedialog.askdirectory(title="Select directory for training data")
