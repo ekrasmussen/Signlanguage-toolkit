@@ -1,0 +1,125 @@
+from tkinter import filedialog
+from detect import *
+from model import *
+from extract_datapoints import *
+import tkinter as tk
+from threading import Thread, Event
+
+class Gui:
+
+    def __init__(self, actions_directory, shape, data_path):
+        self.root = tk.Tk()
+        self.data_path = data_path
+        self.actions_directory = actions_directory
+        self.shape = shape
+        self.stop_event = Event()
+        self.stop_event.clear()
+        self.thread = None
+
+    def start_gui(self):
+        labelx = 50
+        spinboxx = 200
+        self.root.geometry("400x300")
+        self.root.title(f"Training & extract")
+
+        self.root.resizable(0,0)
+        canvas = tk.Canvas(self.root, width=400, height=300)
+        canvas.pack()
+        
+
+        #Label that shows directory
+        global label_directory_text
+        label_directory_text = tk.StringVar()
+        label_directory_text.set(f'Directory: {self.data_path}')
+        label_directory = tk.Label(self.root, font=('Arial', 10), textvariable=label_directory_text)
+        canvas.create_window(30, 230, window=label_directory, anchor=tk.W)
+
+        #Button for selecting directory for training data
+        directory_button = tk.Button(self.root, text="Select directory", font=('Arial', 10), command=self.select_directory)
+        canvas.create_window(30, 260, window=directory_button, anchor=tk.W)
+
+        #Extract checkbox
+        #Used to get the value the check_box is in
+        check_box_extract_value = tk.IntVar()
+        check_box_extract = tk.Checkbutton(self.root, text='Extract & train', font=('Arial', 10), variable=check_box_extract_value, onvalue=1, offvalue=0)
+        canvas.create_window(spinboxx, 180, window=check_box_extract, anchor=tk.W)
+
+        #Actions dropdown
+        label_actions = tk.Label(self.root, text="Action set:", font=('Arial', 10))
+        canvas.create_window(labelx,60,window=label_actions, anchor=tk.W)
+
+        dropdown_actions = ["Default", "Yubi-yay"]
+        clicked = tk.StringVar()
+        clicked.set(dropdown_actions[0])
+        dropdown = tk.OptionMenu(self.root, clicked, *dropdown_actions)
+        canvas.create_window(spinboxx, 60, window=dropdown, anchor=tk.W)
+
+        #Desired length
+        label_fps = tk.Label(self.root, text="Frame amount:", font=('Arial', 10))
+        canvas.create_window(labelx,90,window=label_fps, anchor=tk.W)
+
+        desired_length = tk.IntVar(value=1)
+        spinbox_frames = tk.Spinbox(self.root,textvariable=desired_length, from_= 1, to = 90)
+        canvas.create_window(spinboxx,90, window=spinbox_frames, anchor=tk.W)
+
+        #Desired epochs
+        label_epochs = tk.Label(self.root, text="Epochs:", font=('Arial', 10))
+        canvas.create_window(labelx,120,window=label_epochs, anchor=tk.W)
+
+        desired_epochs = tk.IntVar(value=1)
+        spinbox_epochs = tk.Spinbox(self.root,textvariable=desired_epochs, from_= 1, to = 10000)
+        canvas.create_window(spinboxx,120, window=spinbox_epochs, anchor=tk.W)
+
+        #Desired seed
+        label_seed = tk.Label(self.root, text="Seed:", font=('Arial', 10))
+        canvas.create_window(labelx,150,window=label_seed, anchor=tk.W)
+
+        desired_seed = tk.IntVar(value=1)
+        spinbox_seed = tk.Spinbox(self.root,textvariable=desired_seed, from_= 1, to=100000)
+        canvas.create_window(spinboxx,150, window=spinbox_seed, anchor=tk.W)
+       
+        #Button for starting the process assigned to thread
+        button_start = tk.Button(self.root, text="Start", font=('Arial', 10), command=lambda : self.start_thread(check_box_extract_value, clicked, desired_length, desired_epochs, desired_seed))
+        canvas.create_window(370, 260, window=button_start, anchor=tk.E)
+
+        self.root.protocol("WM_DELETE_WINDOW", self.on_closing)
+        self.root.mainloop()
+
+    def execute_train(self, should_extract_data, clicked, frames, epochs, seed):
+        actions = self.actions_directory[clicked.get()]
+        try:    
+            videos = count_videos(actions)
+            desired_length = frames.get()
+            epochs_amount = epochs.get()
+            seed = seed.get()
+
+            if should_extract_data.get():
+                extract_data(actions, videos, desired_length, self.data_path, self.stop_event)
+            model = YubiModel(desired_length, self.shape, actions, self.data_path)
+            model.train_model(epochs_amount, videos, seed, self.stop_event)
+        except:
+            print('Check your values!')
+
+    def select_directory(self):
+        directory = filedialog.askdirectory(title="Select directory for training data")
+        if directory:
+            self.data_path = directory
+            global label_directory_text
+            label_directory_text.set(self.data_path)
+
+    def start_thread(self, check_box_extract_value, clicked, desired_length, desired_epochs, desired_seed):
+        self.stop_event.clear()
+        
+        #Create a Thread for the start method (to avoid hanging the gui when the training/extraction starts)
+        self.thread = Thread(target=self.execute_train, args=(check_box_extract_value, clicked, desired_length, desired_epochs, desired_seed))
+        self.thread.start()
+ 
+
+    def stop_thread(self):
+        self.stop_event.set()
+        self.thread.join()
+
+    def on_closing(self):
+        self.stop_thread()
+        self.root.destroy()
+        
