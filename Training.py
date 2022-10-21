@@ -5,7 +5,7 @@ from detect import *
 from model import *
 from extract_datapoints import *
 import tkinter as tk
-from threading import Thread
+from threading import Thread, Event
 
 #path for exported data
 data_path= os.path.join('MP_Data')
@@ -30,34 +30,11 @@ EPOCHS_AMOUNT = 2000
 #The seed used when spliting train and test data
 SEED = 1337
 
-def start(check_box_value, clicked, frames, epochs, seed):
-    actions = ACTIONSDICT[clicked.get()]
-    try:    
-        videos = count_videos(actions)
-        desired_length = frames.get()
-        epochs_amount = epochs.get()
-        seed = seed.get()
-
-        if check_box_value.get():
-            extract_data(actions, videos, desired_length, data_path)
-        model = YubiModel(desired_length, SHAPE, actions, data_path)
-        model.train_model(epochs_amount, videos, seed)
-    except:
-        print('Check your values!')
-
-def select_directory():
-    global data_path
-    directory = filedialog.askdirectory(title="Select directory for training data")
-    if directory:
-        data_path = directory
-        global label_directory_text
-        label_directory_text.set(data_path)
-
-
 class Gui:
     
     def __init__(self):
         self.root = tk.Tk()
+        self.stop_event = Event()
 
     def start_gui(self):
         labelx = 50
@@ -77,7 +54,7 @@ class Gui:
         canvas.create_window(30, 230, window=label_directory, anchor=tk.W)
 
         #Button for selecting directory for training data
-        directory_button = tk.Button(self.root, text="Select directory", font=('Arial', 10), command=select_directory)
+        directory_button = tk.Button(self.root, text="Select directory", font=('Arial', 10), command=self.select_directory)
         canvas.create_window(30, 260, window=directory_button, anchor=tk.W)
 
         #Extract checkbox
@@ -121,13 +98,36 @@ class Gui:
         canvas.create_window(spinboxx,150, window=spinbox_seed, anchor=tk.W)
 
         #Create a Thread for the start method (to avoid hanging the gui when the training/extraction starts)
-        thread = Thread(target=start, args=(check_box_extract_value, clicked, desired_length, desired_epochs, desired_seed))
+        thread = Thread(target=self.start, args=(check_box_extract_value, clicked, desired_length, desired_epochs, desired_seed))
         
         #Button for starting the process assigned to thread
         start_button = tk.Button(self.root, text="Start", font=('Arial', 10), command=lambda : thread.start())
         canvas.create_window(370, 260, window=start_button, anchor=tk.E)
         
         self.root.mainloop()
+
+    def execute_train(self, should_extract_data, clicked, frames, epochs, seed):
+        actions = ACTIONSDICT[clicked.get()]
+        try:    
+            videos = count_videos(actions)
+            desired_length = frames.get()
+            epochs_amount = epochs.get()
+            seed = seed.get()
+
+            if should_extract_data.get():
+                extract_data(actions, videos, desired_length, data_path)
+            model = YubiModel(desired_length, SHAPE, actions, data_path)
+            model.train_model(epochs_amount, videos, seed)
+        except:
+            print('Check your values!')
+
+    def select_directory(self):
+        global data_path
+        directory = filedialog.askdirectory(title="Select directory for training data")
+        if directory:
+            data_path = directory
+            global label_directory_text
+            label_directory_text.set(data_path)
 
 
 if __name__ == "__main__":
