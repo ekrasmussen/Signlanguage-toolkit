@@ -7,11 +7,11 @@ from threading import Thread, Event
 
 class Gui:
 
-    def __init__(self, actions_directory, shape, data_path):
+    def __init__(self, actions_dictionary, shape, data_path):
         #Initialize a window
         self.root = tk.Tk()
         self.data_path = data_path
-        self.actions_directory = actions_directory
+        self.actions_dictionary = actions_dictionary
         self.shape = shape
         self.stop_event = Event()
         self.stop_event.clear()
@@ -89,7 +89,7 @@ class Gui:
         self.root.mainloop()
 
     def execute_train(self, should_extract_data, clicked, frames, epochs, seed):
-        actions = self.actions_directory[clicked.get()]
+        actions = self.actions_dictionary[clicked.get()]
         try:    
             videos = count_videos(actions)
             desired_length = frames.get()

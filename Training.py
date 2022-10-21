@@ -3,7 +3,7 @@ import argparse
 from detect import *
 from model import *
 from extract_datapoints import *
-import training_gui
+from training_gui import *
 
 #path for exported data
 data_path= os.path.join('MP_Data')
@@ -37,7 +37,7 @@ if __name__ == "__main__":
 
     if args.gui:
         #If the gui argument is present, launch gui instead of tui
-        gui = training_gui.Gui(ACTIONSDICT, SHAPE, data_path)
+        gui = Gui(ACTIONSDICT, SHAPE, data_path)
         gui.start_gui()
     else:
         #If you start the program with --extract behind it, it will extract data and train, if you start the program normally you only train.
