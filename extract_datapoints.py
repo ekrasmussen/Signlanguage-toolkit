@@ -5,6 +5,7 @@ import cv2
 import random
 from detect import *
 from progress.bar import Bar
+from threading import Event
 
 def count_videos(actions):
     print("Counting Videos...")
@@ -17,7 +18,7 @@ def count_videos(actions):
 
 
 
-def extract_data(actions, videoAmount, desired_length, data_path):
+def extract_data(actions, videoAmount, desired_length, data_path, stop_event = Event()):
     #create folder for each action
     i = 0
     for action in actions:
@@ -36,6 +37,10 @@ def extract_data(actions, videoAmount, desired_length, data_path):
     with mp_holistic.Holistic(min_detection_confidence=0.5, min_tracking_confidence=0.5) as holistic:
         #goes through the actions
         for action in actions:
+            if stop_event.is_set():
+                print("stopped..")
+                break
+            
             #gets list of videos
             video_list = os.listdir(f'Training_videos\{action}')
 
@@ -44,6 +49,10 @@ def extract_data(actions, videoAmount, desired_length, data_path):
             #goes through the list of videos
             with Bar(f'Extracting datapoints for action {action}...', max = len(video_list)) as bar:
                 for video in video_list:
+                    if stop_event.is_set():
+                        print("stopped..")
+                        break
+                    
                     #grabs video
                     cap = cv2.VideoCapture(f'Training_videos\{action}\{video}')
                     #counts amount of frames in video
@@ -60,6 +69,10 @@ def extract_data(actions, videoAmount, desired_length, data_path):
                     cap.set(cv2.CAP_PROP_POS_FRAMES, start)
                     #goes through frames
                     for frame_num in range(desired_length):
+                        if stop_event.is_set():
+                            print("stopped..")
+                            break
+                        
                         #uses read to get frame
                         has_frame, frame = cap.read()
                         #if no frame exists, fill in blank

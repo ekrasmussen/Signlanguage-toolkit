@@ -31,10 +31,12 @@ EPOCHS_AMOUNT = 2000
 SEED = 1337
 
 class Gui:
-    
+
     def __init__(self):
         self.root = tk.Tk()
         self.stop_event = Event()
+        self.stop_event.clear()
+        self.thread = None
 
     def start_gui(self):
         labelx = 50
@@ -42,6 +44,7 @@ class Gui:
         self.root.geometry("400x300")
         self.root.title(f"Training & extract")
 
+        self.root.resizable(0,0)
         canvas = tk.Canvas(self.root, width=400, height=300)
         canvas.pack()
         
@@ -96,17 +99,17 @@ class Gui:
         desired_seed = tk.IntVar(value=1)
         spinbox_seed = tk.Spinbox(self.root,textvariable=desired_seed, from_= 1, to=100000)
         canvas.create_window(spinboxx,150, window=spinbox_seed, anchor=tk.W)
-
-        #Create a Thread for the start method (to avoid hanging the gui when the training/extraction starts)
-        thread = Thread(target=self.start, args=(check_box_extract_value, clicked, desired_length, desired_epochs, desired_seed))
-        
+       
         #Button for starting the process assigned to thread
-        start_button = tk.Button(self.root, text="Start", font=('Arial', 10), command=lambda : thread.start())
-        canvas.create_window(370, 260, window=start_button, anchor=tk.E)
+        button_start = tk.Button(self.root, text="Start", font=('Arial', 10), command=lambda : self.start_thread(check_box_extract_value, clicked, desired_length, desired_epochs, desired_seed))
+        canvas.create_window(370, 260, window=button_start, anchor=tk.E)
         
+        button_test = tk.Button(self.root, text="Test stop thread", font=('Arial', 10), command=lambda : self.stop_thread())
+        canvas.create_window(370, 200, window=button_test, anchor=tk.E)
+
         self.root.mainloop()
 
-    def execute_train(self, should_extract_data, clicked, frames, epochs, seed):
+    def execute_train(self, should_extract_data, clicked, frames, epochs, seed, stop_event):
         actions = ACTIONSDICT[clicked.get()]
         try:    
             videos = count_videos(actions)
@@ -115,9 +118,9 @@ class Gui:
             seed = seed.get()
 
             if should_extract_data.get():
-                extract_data(actions, videos, desired_length, data_path)
+                extract_data(actions, videos, desired_length, data_path, stop_event)
             model = YubiModel(desired_length, SHAPE, actions, data_path)
-            model.train_model(epochs_amount, videos, seed)
+            model.train_model(epochs_amount, videos, seed, stop_event)
         except:
             print('Check your values!')
 
@@ -129,6 +132,18 @@ class Gui:
             global label_directory_text
             label_directory_text.set(data_path)
 
+    def start_thread(self, check_box_extract_value, clicked, desired_length, desired_epochs, desired_seed):
+        self.stop_event.clear()
+        
+        #Create a Thread for the start method (to avoid hanging the gui when the training/extraction starts)
+        self.thread = Thread(target=self.execute_train, args=(check_box_extract_value, clicked, desired_length, desired_epochs, desired_seed, self.stop_event))
+        self.thread.start()
+ 
+
+    def stop_thread(self):
+        self.stop_event.set()
+        self.thread.join()
+        
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Create and train a model based on a dataset with tensorflow")
