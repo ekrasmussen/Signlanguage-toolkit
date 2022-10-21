@@ -36,6 +36,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     if args.gui:
+        #If the gui argument is present, launch gui instead of tui
         gui = training_gui.Gui(ACTIONSDICT, SHAPE, data_path)
         gui.start_gui()
     else:

@@ -16,7 +16,14 @@ def count_videos(actions):
         i += 1
     return videoAmount
 
+#Check if the event passed from the gui has been set. If so, return True
+def is_stop_requested(event):
+    should_stop = False
 
+    if event.is_set():
+        print("Thread stopping..")
+        should_stop = True
+    return should_stop
 
 def extract_data(actions, videoAmount, desired_length, data_path, stop_event = Event()):
     #create folder for each action
@@ -37,10 +44,10 @@ def extract_data(actions, videoAmount, desired_length, data_path, stop_event = E
     with mp_holistic.Holistic(min_detection_confidence=0.5, min_tracking_confidence=0.5) as holistic:
         #goes through the actions
         for action in actions:
-            if stop_event.is_set():
-                print("stopped..")
+            #Verify stop event hasnt been requested/set
+            if is_stop_requested(stop_event):
                 break
-            
+
             #gets list of videos
             video_list = os.listdir(f'Training_videos\{action}')
 
@@ -49,10 +56,9 @@ def extract_data(actions, videoAmount, desired_length, data_path, stop_event = E
             #goes through the list of videos
             with Bar(f'Extracting datapoints for action {action}...', max = len(video_list)) as bar:
                 for video in video_list:
-                    if stop_event.is_set():
-                        print("stopped..")
+                    if is_stop_requested(stop_event):
                         break
-                    
+
                     #grabs video
                     cap = cv2.VideoCapture(f'Training_videos\{action}\{video}')
                     #counts amount of frames in video
@@ -69,8 +75,7 @@ def extract_data(actions, videoAmount, desired_length, data_path, stop_event = E
                     cap.set(cv2.CAP_PROP_POS_FRAMES, start)
                     #goes through frames
                     for frame_num in range(desired_length):
-                        if stop_event.is_set():
-                            print("stopped..")
+                        if is_stop_requested(stop_event):
                             break
                         
                         #uses read to get frame

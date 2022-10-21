@@ -8,6 +8,7 @@ from threading import Thread, Event
 class Gui:
 
     def __init__(self, actions_directory, shape, data_path):
+        #Initialize a window
         self.root = tk.Tk()
         self.data_path = data_path
         self.actions_directory = actions_directory
@@ -82,7 +83,9 @@ class Gui:
         button_start = tk.Button(self.root, text="Start", font=('Arial', 10), command=lambda : self.start_thread(check_box_extract_value, clicked, desired_length, desired_epochs, desired_seed))
         canvas.create_window(370, 260, window=button_start, anchor=tk.E)
 
+        #In the event that user closes window, run x method
         self.root.protocol("WM_DELETE_WINDOW", self.on_closing)
+        
         self.root.mainloop()
 
     def execute_train(self, should_extract_data, clicked, frames, epochs, seed):
@@ -107,6 +110,7 @@ class Gui:
             global label_directory_text
             label_directory_text.set(self.data_path)
 
+    #Function to start a thread, which also clears the stop event. If stop_event is set, functions dont run
     def start_thread(self, check_box_extract_value, clicked, desired_length, desired_epochs, desired_seed):
         self.stop_event.clear()
         
@@ -114,12 +118,14 @@ class Gui:
         self.thread = Thread(target=self.execute_train, args=(check_box_extract_value, clicked, desired_length, desired_epochs, desired_seed))
         self.thread.start()
  
-
+    #Stops the thread and joins back on the main thread
     def stop_thread(self):
         self.stop_event.set()
         self.thread.join()
 
+    #The on_closing function which is called when user closes window
     def on_closing(self):
-        self.stop_thread()
+        if self.thread is not None:
+            self.stop_thread()
         self.root.destroy()
         
