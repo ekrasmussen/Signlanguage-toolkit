@@ -1,0 +1,86 @@
+from cProfile import label
+from msilib.schema import CheckBox
+import tkinter as tk 
+import mediapipe as mp
+import cv2
+from PIL import Image, ImageTk 
+from main import *
+from threading import Thread
+
+mp_holistic = mp.solutions.holistic 
+mp_drawing = mp.solutions.drawing_utils 
+
+window = tk.Tk()
+window.geometry("480x700")
+window.title("Test") 
+
+frame = tk.Frame(height=480, width=480)
+frame.place(x=10, y=90) 
+video_feed = tk.Label(frame) 
+video_feed.place(x=0, y=0)
+
+checkbox_display_visual_var = tk.IntVar()
+
+checkbox_display_visual = tk.Checkbutton(window, text='Display visuals', variable = checkbox_display_visual_var, font=('Arial', 10))
+checkbox_display_visual.pack()
+
+label_a_value = tk.StringVar()
+label_b_value = tk.StringVar()
+label_c_value = tk.StringVar()
+label_d_value = tk.StringVar()
+label_e_value = tk.StringVar()
+label_idle_value = tk.StringVar()
+
+label_a = tk.Label(window, text='A', font=('Arial', 10), textvariable = label_a_value)
+label_b = tk.Label(window, text='B', font=('Arial', 10), textvariable = label_b_value)
+label_c = tk.Label(window, text='c', font=('Arial', 10), textvariable = label_c_value)
+label_d = tk.Label(window, text='D', font=('Arial', 10), textvariable = label_d_value)
+label_e = tk.Label(window, text='E', font=('Arial', 10), textvariable = label_e_value)
+label_idle = tk.Label(window, text='Idle', font=('Arial', 10), textvariable = label_idle_value)
+
+label_a.pack()
+label_b.pack()
+label_c.pack()
+label_d.pack()
+label_e.pack()
+label_idle.pack()
+
+cap = cv2.VideoCapture(0)
+holistic = mp_holistic.Holistic(min_detection_confidence=0.5, min_tracking_confidence=0.5)
+sequence = []
+sentence = []
+model = load_model()
+
+prop_labels = [label_a_value, label_b_value, label_c_value, label_d_value, label_e_value, label_idle_value]
+
+# def display_confidence_text(predictions):
+#     if predictions:
+#         for num, prop in enumerate(predictions):
+#             prop_labels[num].set(f'{actions[num]}: {prop}')
+
+def test1():  
+        ret, frame = cap.read()
+        image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        results = holistic.process(image)
+
+        if checkbox_display_visual_var.get(): # In python 0 is equal to false, and 1 is equal to true
+            draw_landmarks(image, results)
+
+        keypoints = extract_keypoints_hands(results)
+
+        global sentence
+        image, sentence, predictions = start_read(keypoints, image, sequence, sentence, model)
+        
+        # display_confidence_text(predictions)
+
+        img = image
+        imgarr = Image.fromarray(img) 
+        imgtk = ImageTk.PhotoImage(imgarr) 
+        video_feed.imgtk = imgtk 
+        video_feed.configure(image=imgtk)
+        video_feed.after(10, test1)
+
+test1()
+
+
+window.mainloop()
