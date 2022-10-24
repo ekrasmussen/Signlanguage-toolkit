@@ -1,4 +1,3 @@
-from tkinter import filedialog
 from detect import *
 from model import *
 from extract_datapoints import *
@@ -16,7 +15,7 @@ class Gui:
         self.stop_event = Event()
         self.stop_event.clear()
         self.thread = None
-
+    
     def start_gui(self):
         labelx = 50
         spinboxx = 200
@@ -26,7 +25,6 @@ class Gui:
         self.root.resizable(0,0)
         canvas = tk.Canvas(self.root, width=400, height=300)
         canvas.pack()
-        
 
         #Label that shows directory
         global label_directory_text
@@ -115,8 +113,12 @@ class Gui:
         self.stop_event.clear()
         
         #Create a Thread for the start method (to avoid hanging the gui when the training/extraction starts)
-        self.thread = Thread(target=self.execute_train, args=(check_box_extract_value, clicked, desired_length, desired_epochs, desired_seed))
-        self.thread.start()
+        if 0 < desired_length.get() < 91 and 0 < desired_epochs.get() < 10001 and 0 < desired_seed.get() < 100001:
+            self.thread = Thread(target=self.execute_train, args=(check_box_extract_value, clicked, desired_length, desired_epochs, desired_seed))
+            self.thread.start()
+        else:
+            raise ValueError('Check your values.')
+
  
     #Stops the thread and joins back on the main thread
     def stop_thread(self):
