@@ -8,6 +8,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import multilabel_confusion_matrix, accuracy_score
 from datetime import datetime
 from tensorflow.keras.callbacks import EarlyStopping
+from threading import Event
 
 class YubiModel:
 
@@ -75,77 +76,78 @@ class YubiModel:
         for matrix in range(0, len(confusion_matrix)):
             pd.DataFrame(confusion_matrix[matrix]).to_csv(f"{self.logs_path}/confusion_matrix_{self.actions[matrix]}.csv", sep=",")
 
-    def save_training_info(self, accuracy, epochs):
+    def save_training_info(self, accuracy, epochs, seed):
         #saves accuracy score as a simple txt file
         file = open(f"{self.logs_path}/training_info.txt", "w+")
-        file.write(f"Accuracy: {accuracy}\nDesired lenght: {self.desired_length}\nEpochs: {epochs}")
+        file.write(f"Accuracy: {accuracy}\nDesired length: {self.desired_length}\nEpochs: {epochs}\nSeed: {seed}")
         file.close()
     
-    def train_model(self, epochs_amount, videoAmount, seed):
-        #maps labels to numbers
-        label_map = {label:num for num, label in enumerate(self.actions)}
+    def train_model(self, epochs_amount, videoAmount, seed, stop_event = Event()):
+        if not stop_event.isSet():
+            #maps labels to numbers
+            label_map = {label:num for num, label in enumerate(self.actions)}
 
-        #creates to lists
-        sequences, labels = [], []
-        i = 0
-        #goes through actions
-        for action in self.actions:
-            
-            no_sequences = videoAmount[i]
+            #creates to lists
+            sequences, labels = [], []
+            i = 0
+            #goes through actions
+            for action in self.actions:
+                
+                no_sequences = videoAmount[i]
 
-            #goes through sequences
-            for sequence in range(no_sequences):
-                #creates list for of frames for a sequence
-                window = []
                 #goes through sequences
-                for frame_num in range(self.desired_length):
-                    #loads numpy array
-                    res = np.load(os.path.join(self.data_path, action, str(sequence), "{}.npy".format(frame_num)))
-                    #appends frame to window list
-                    window.append(res)
-                #appends window list to sequences list
-                sequences.append(window)
-                #appends label map for action to labels list
-                labels.append(label_map[action])
+                for sequence in range(no_sequences):
+                    #creates list for of frames for a sequence
+                    window = []
+                    #goes through sequences
+                    for frame_num in range(self.desired_length):
+                        #loads numpy array
+                        res = np.load(os.path.join(self.data_path, action, str(sequence), "{}.npy".format(frame_num)))
+                        #appends frame to window list
+                        window.append(res)
+                    #appends window list to sequences list
+                    sequences.append(window)
+                    #appends label map for action to labels list
+                    labels.append(label_map[action])
 
-            i += 1
-        
-            #set X for model training
-        X = np.array(sequences)
-        #set y for model training
-        y = to_categorical(labels).astype(int)
+                i += 1
+            
+                #set X for model training
+            X = np.array(sequences)
+            #set y for model training
+            y = to_categorical(labels).astype(int)
 
-        #splits dataset in training and test sets
-        #random_state sets seed value to allow for comparison of different neural networks
-        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=seed)
+            #splits dataset in training and test sets
+            #random_state sets seed value to allow for comparison of different neural networks
+            X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=seed)
 
-        #sets path for log file
-        log_dir = os.path.join('Logs')
-        #sets condition for earlystopping
-        #monitor val_loss
-        #mode is set to min to stop when val_loss stops descreasing 
-        #patience sets number of epochs after which training will be stopped
-        #restore_best_weights restores best weights after stopping
-        earlystopping = EarlyStopping(monitor = 'loss', min_delta = 0,  patience = 20, verbose = 0, mode = 'auto', baseline = None, restore_best_weights = True)
+            #sets path for log file
+            log_dir = os.path.join('Logs')
+            #sets condition for earlystopping
+            #monitor val_loss
+            #mode is set to min to stop when val_loss stops descreasing 
+            #patience sets number of epochs after which training will be stopped
+            #restore_best_weights restores best weights after stopping
+            earlystopping = EarlyStopping(monitor = 'loss', min_delta = 0,  patience = 20, verbose = 0, mode = 'auto', baseline = None, restore_best_weights = True)
 
-        #trains the model
-        #do not specify the batch_size if your data is in the form of a dataset, generators, or keras.utils.Sequence instances
-        m = self.model.fit(X_train, y_train, epochs = epochs_amount, callbacks=earlystopping)
+            #trains the model
+            #do not specify the batch_size if your data is in the form of a dataset, generators, or keras.utils.Sequence instances
+            m = self.model.fit(X_train, y_train, epochs = epochs_amount, callbacks=earlystopping)
 
-        #saves model
-        self.model.save(f'{self.timestamp}.h5')
+            #saves model
+            self.model.save(f'{self.timestamp}.h5')
 
-        #sets yhat from prediction on X_test
-        yhat = self.model.predict(X_test)
+            #sets yhat from prediction on X_test
+            yhat = self.model.predict(X_test)
 
-        ytrue = np.argmax(y_test, axis=1).tolist()
-        yhat = np.argmax(yhat, axis=1).tolist()
+            ytrue = np.argmax(y_test, axis=1).tolist()
+            yhat = np.argmax(yhat, axis=1).tolist()
 
-        #creates and saves confusion matrix
-        confusion_matrix = multilabel_confusion_matrix(ytrue, yhat)
-        self.save_confusion_matrix(confusion_matrix)
+            #creates and saves confusion matrix
+            confusion_matrix = multilabel_confusion_matrix(ytrue, yhat)
+            self.save_confusion_matrix(confusion_matrix)
 
-        #creates and saves training info
-        accuracy = accuracy_score(ytrue, yhat)
-        n_epochs = len(m.history['loss'])
-        self.save_training_info(accuracy, n_epochs)
+            #creates and saves training info
+            accuracy = accuracy_score(ytrue, yhat)
+            n_epochs = len(m.history['loss'])
+            self.save_training_info(accuracy, n_epochs, seed)
