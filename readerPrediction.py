@@ -98,12 +98,12 @@ def prob_viz(res, actions, input_frame, colors):
                     cv2.LINE_AA)
     return output_frame
 
-# def prob_text(res):
-#     for num, prob in enumerate(res):
-#         predictions = []
-#         predictions.append(f'{int(prob * 100)}')
+def prob_text(res):
+    predictions = []
+    for num, prob in enumerate(res):
+        predictions.append(f'{int(prob * 100)}')
 
-#     return predictions
+    return predictions
 
 def start_webcam():
     cap = cv2.VideoCapture(0)
@@ -138,6 +138,7 @@ def start_read(keypoints, image, sequence, sentence, model):
                 # Viz probabilities
             image = prob_viz(res, actions, image, colors)
             predictions = prob_text(res)
+
 
     cv2.rectangle(image, (0, 0), (640, 40), (245, 117, 16), -1)
     cv2.putText(image, ' '.join(sentence), (3, 30),
