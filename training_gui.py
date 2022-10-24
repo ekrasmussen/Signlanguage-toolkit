@@ -19,11 +19,11 @@ class Gui:
     def start_gui(self):
         labelx = 50
         spinboxx = 200
-        self.root.geometry("400x300")
+        self.root.geometry("450x300")
         self.root.title(f"Training & extract")
 
         self.root.resizable(0,0)
-        canvas = tk.Canvas(self.root, width=400, height=300)
+        canvas = tk.Canvas(self.root, width=450, height=300)
         canvas.pack()
 
         #Label that shows directory
@@ -55,7 +55,11 @@ class Gui:
 
         #Desired length
         label_fps = tk.Label(self.root, text="Frame amount:", font=('Arial', 10))
+        label_max_fps = tk.Label(self.root, text="Max: 90", font=("Arial", 10))
+        
         canvas.create_window(labelx,90,window=label_fps, anchor=tk.W)
+        canvas.create_window(labelx + 290,90,window=label_max_fps, anchor=tk.W)
+
 
         desired_length = tk.IntVar(value=1)
         spinbox_frames = tk.Spinbox(self.root,textvariable=desired_length, from_= 1, to = 90)
@@ -63,7 +67,10 @@ class Gui:
 
         #Desired epochs
         label_epochs = tk.Label(self.root, text="Epochs:", font=('Arial', 10))
+        label_max_epochs = tk.Label(self.root, text="Max: 10000", font=('Arial', 10))
+        
         canvas.create_window(labelx,120,window=label_epochs, anchor=tk.W)
+        canvas.create_window(labelx + 290, 120, window=label_max_epochs, anchor=tk.W)
 
         desired_epochs = tk.IntVar(value=1)
         spinbox_epochs = tk.Spinbox(self.root,textvariable=desired_epochs, from_= 1, to = 10000)
@@ -71,7 +78,10 @@ class Gui:
 
         #Desired seed
         label_seed = tk.Label(self.root, text="Seed:", font=('Arial', 10))
+        label_max_seed = tk.Label(self.root, text="Max: 100000", font=('Arial', 10))
+        
         canvas.create_window(labelx,150,window=label_seed, anchor=tk.W)
+        canvas.create_window(labelx + 290,150,window=label_max_seed, anchor=tk.W)
 
         desired_seed = tk.IntVar(value=1)
         spinbox_seed = tk.Spinbox(self.root,textvariable=desired_seed, from_= 1, to=100000)
