@@ -1,4 +1,6 @@
 import argparse
+from turtle import window_height, window_width
+from typing_extensions import Required
 
 import cv2
 import os
@@ -14,6 +16,8 @@ def setup():
     parser.add_argument('--fps', type=int, required=False, default=30, help="Cameras FPS (Default 30)")
     parser.add_argument('Labels', metavar='Label', type=str, nargs='+', help="Labels for the recording session.")
     parser.add_argument('--amount', type=int, required=False, default=1, help="Amount of videos to record for each label")
+    parser.add_argument('--xres', type=int, required=False, default=640, help="Width of camera resolution. (Default 640)")
+    parser.add_argument('--yres', type=int, required=False, default=480, help="Height of camera resolution. (Default 480)")
     args = parser.parse_args() 
 
     return args
@@ -35,9 +39,14 @@ def create_labels(output_folder_name, labels):
 
 #Records webcam
 def webcam_record(labels, fps, recordtime, breaktime, amount, output):
-    camera = cv2.VideoCapture(0)
-    camera_width = int(camera.get(cv2.CAP_PROP_FRAME_WIDTH))
-    camera_height = int(camera.get(cv2.CAP_PROP_FRAME_HEIGHT))
+    camera = cv2.VideoCapture(0, apiPreference=cv2.CAP_ANY, params=[cv2.CAP_PROP_FRAME_WIDTH, camera_width,
+    cv2.CAP_PROP_FRAME_HEIGHT, camera_height])
+
+    #Setup for user webcam window
+    ratio = camera_width / camera_height
+    window_height = 480
+    window_width = int(window_height * ratio)
+    window_dimensions = (window_width, window_height)
 
     if camera.isOpened:
         #Loops through labels in list
@@ -52,18 +61,20 @@ def webcam_record(labels, fps, recordtime, breaktime, amount, output):
                     #Gets boolean and frame
                     ret, image = camera.read()
                     if ret:
+                        #Resize image for better UX
+                        resized_image = cv2.resize(image, window_dimensions)
                         #If anything is captured
                         #Save the image before processing with graphics
                         if frame > breaktime:
                             result.write(image)
                             #Graphics for recording
-                            image = cv2.putText(image, f"Recording: {label}", (50, 50), cv2.FONT_HERSHEY_COMPLEX, 1, (255, 0, 0), 2, cv2.LINE_AA)
+                            resized_image = cv2.putText(resized_image, f"Recording: {label}", (50, 50), cv2.FONT_HERSHEY_COMPLEX, 1, (255, 0, 0), 2, cv2.LINE_AA)
                         else:
                             #Graphics before recording letting the user know what to sign next
-                            image = cv2.putText(image, f"Get ready for: {label}", (50, 50), cv2.FONT_HERSHEY_COMPLEX, 1, (255, 0, 0), 2, cv2.LINE_AA)
+                            resized_image = cv2.putText(resized_image, f"Get ready for: {label}", (50, 50), cv2.FONT_HERSHEY_COMPLEX, 1, (255, 0, 0), 2, cv2.LINE_AA)
 
                         #Displays webcam to user with graphics
-                        cv2.imshow("Recording Window", image)
+                        cv2.imshow("Recording Window", resized_image)
                         #Breaks with 'Esc' key
                         if cv2.waitKey(1) == 27:
                             break
@@ -86,6 +97,9 @@ if __name__ == "__main__":
     recording_frames_amount = camera_fps * args.recordtime
     break_time = camera_fps * args.breaktime
     video_amount = args.amount
+    camera_width = args.xres
+    camera_height = args.yres
+
 
     #Add labels argument to list as upper case
     for label in args.Labels:
