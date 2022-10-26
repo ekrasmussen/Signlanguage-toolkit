@@ -1,10 +1,7 @@
 import argparse
-from turtle import window_height, window_width
-from typing_extensions import Required
 
 import cv2
 import os
-import sys
 
 def setup():
     #Arguments for running the software, all values have a default value and can be changed
