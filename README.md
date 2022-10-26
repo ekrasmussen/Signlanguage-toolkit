@@ -110,10 +110,12 @@ Recorder takes certain arguments to customize how the recording session is going
 - ``--breaktime <int>``: determine how many seconds the breaks between recordings are. Default = 3
 - ``--fps <int>`` set this to the closest whole integer for how many frames your camera produces each second. Default = 30 
 - ``--amount <int>`` set how many videos will be recorded for each label. Meaning if you have 3 labels and set 2 as the amount, be prepared to record 6 videos. Default = 1
+- ``--xres <int>`` set the x resolution of videos in pixels. Default = 640
+- ``--yres <int>`` set the y resolution of videos in pixels. Default = 480
 
 Example:
-```python Record.py --output MyDirectory --recordtime 5 --breaktime 10 --fps 60 --amount 3 Cat Dog```
-In the above example, the videos will be saved in the directory called "MyDirectory", 5 seconds will be recorded fo each video. 10 seconds of break time in between the recordings. The camera is 60 fps, and 3 videos for each label. The two labels being "cat" and "dog"
+```python Record.py --output MyDirectory --recordtime 5 --breaktime 10 --fps 60 --amount 3 --xres 1920 --yres 1080 Cat Dog```
+In the above example, the videos will be saved in the directory called "MyDirectory", 5 seconds will be recorded fo each video. 10 seconds of break time in between the recordings. The camera is 60 fps, and 3 videos for each label at a resolution of 1920 x 1080. The two labels being "cat" and "dog".
  
 After launching you will have time to prepare. The preparation time amounts to the same amount of time supplied in the ``--breaktime`` parameter
   
