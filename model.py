@@ -9,6 +9,7 @@ from sklearn.metrics import multilabel_confusion_matrix, accuracy_score
 from datetime import datetime
 from tensorflow.keras.callbacks import EarlyStopping
 from threading import Event
+import configparser
 
 class YubiModel:
 
@@ -151,3 +152,15 @@ class YubiModel:
             accuracy = accuracy_score(ytrue, yhat)
             n_epochs = len(m.history['loss'])
             self.save_training_info(accuracy, n_epochs, seed)
+
+    def save_as_config_file(self):
+        config = configparser.ConfigParser()
+        config.add_section('Model')
+
+        config['Model']['Length'] = str(self.desired_length)
+        config['Model']['Shape'] = str(self.shape)
+        config['Model']['Actions set'] = str(self.actions)
+
+        with open(f'{self.timestamp}.ini', 'w') as configfile:
+            config.write(configfile)
+
