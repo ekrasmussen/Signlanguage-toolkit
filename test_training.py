@@ -12,9 +12,9 @@ class TestIntegration(unittest.TestCase):
     def test_extract_and_train_model(self):
 
 
-        extract_data(ACTIONS, VIDEO_AMOUNT, DESIRED_LENGTH, DATA_PATH)
+        extract_data(ACTIONS, VIDEO_AMOUNT, DESIRED_LENGTH, data_path)
 
-        model = YubiModel(DESIRED_LENGTH, SHAPE, ACTIONS, DATA_PATH)
+        model = YubiModel(DESIRED_LENGTH, SHAPE, ACTIONS, data_path)
         model.train_model(EPOCHS_AMOUNT, VIDEO_AMOUNT, SEED)
 
 
@@ -26,7 +26,7 @@ class TestIntegration(unittest.TestCase):
             test_video_amount += VIDEO_AMOUNT[i]
             for sequence in range (no_sequences):  
                 try:
-                    data_amount += len(os.listdir(os.path.join(DATA_PATH, action, str(sequence))))
+                    data_amount += len(os.listdir(os.path.join(data_path, action, str(sequence))))
 
                 except:
                     print('except from extract_and_train_model_test in test.training.py')
@@ -35,7 +35,6 @@ class TestIntegration(unittest.TestCase):
 
         #Checks that the correct amount of numpy array are created
         self.assertEqual(data_amount, test_video_amount * DESIRED_LENGTH)
-
         #Checks that the model has trained
         self.assertGreater(model.n_epochs, 0)
 

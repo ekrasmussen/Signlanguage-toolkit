@@ -151,5 +151,5 @@ class YubiModel:
 
             #creates and saves training info
             accuracy = accuracy_score(ytrue, yhat)
-            n_epochs = len(m.history['loss'])
-            self.save_training_info(accuracy, n_epochs, seed)
+            self.n_epochs = len(m.history['loss'])
+            self.save_training_info(accuracy, self.n_epochs, seed)
