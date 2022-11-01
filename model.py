@@ -9,6 +9,7 @@ from sklearn.metrics import multilabel_confusion_matrix, accuracy_score
 from datetime import datetime
 from tensorflow.keras.callbacks import EarlyStopping
 from threading import Event
+import configparser
 
 class YubiModel:
 
@@ -75,8 +76,10 @@ class YubiModel:
     
     def save_confusion_matrix(self, confusion_matrix):
         #convert and save confusion matrix individually by action
-        for matrix in range(0, len(confusion_matrix)):
-            pd.DataFrame(confusion_matrix[matrix]).to_csv(f"{self.logs_path}/confusion_matrix_{self.actions[matrix]}.csv", sep=",")
+        with pd.ExcelWriter(f"{self.logs_path}/confusion_matrix.xlsx") as writer:
+            for matrix in range(0, len(confusion_matrix)):
+                cmdf = pd.DataFrame([confusion_matrix[matrix][0], confusion_matrix[matrix][1]], index=['Positive','Negative'], columns=['Positive','Negative'])
+                cmdf.to_excel(writer, sheet_name=self.actions[matrix])
 
     def save_training_info(self, accuracy, seed):
         #saves accuracy score as a simple txt file
@@ -151,5 +154,17 @@ class YubiModel:
 
             #creates and saves training info
             accuracy = accuracy_score(ytrue, yhat)
-            self.n_epochs = len(m.history['loss'])
+            n_epochs = len(m.history['loss'])
             self.save_training_info(accuracy, seed)
+
+    def save_as_config_file(self):
+        config = configparser.ConfigParser()
+        config.add_section('Model')
+
+        config['Model']['Length'] = str(self.desired_length)
+        config['Model']['Shape'] = str(self.shape)
+        config['Model']['Actions set'] = str(self.actions)
+
+        with open(f'{self.timestamp}.ini', 'w') as configfile:
+            config.write(configfile)
+
