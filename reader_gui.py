@@ -54,14 +54,15 @@ class Gui:
         for num, prob in enumerate(res):
             action_prob.append([num, prob])
         print(action_prob)
-        sorted_action_prob = sorted(action_prob, key = lambda i: i[0])
-        print(f'action_prob after {sorted_action_prob}')
+        sorted_action_prob = sorted(action_prob, key = lambda i: i[1])
+        print(f'action_prob after {sorted_action_prob[0][1]}')
         output_frame = input_frame.copy()
-        for x in range(0, 6):
+        for x in range(0, 5):
             print(f'Printer X{x}')
-            cv2.rectangle(output_frame, (0, 60 + x * 40), (int(sorted_action_prob[x, 1] * 100), 90 + x * 40), colors[x], -1)
-            cv2.putText(output_frame, f'{actions[sorted_action_prob[x, 0]]}: {int(sorted_action_prob[x, 1] * 100)}%', (0, 85 + x * 40), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2,
+            cv2.rectangle(output_frame, (0, 60 + x * 40), (int(sorted_action_prob[x][1] * 100), 90 + x * 40), colors[x], -1)
+            cv2.putText(output_frame, f'{actions[sorted_action_prob[x][0]]}: {int(sorted_action_prob[x][1] * 100)}%', (0, 85 + x * 40), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2,
                         cv2.LINE_AA)
+            print(f'actions with sort: {actions[sorted_action_prob[x][0]]}')
 
         # for num, prob in enumerate(res):
         #     print(f'prop{prob}')
