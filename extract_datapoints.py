@@ -25,7 +25,7 @@ def is_stop_requested(event):
         should_stop = True
     return should_stop
 
-def extract_data(actions, videoAmount, desired_length, data_path, stop_event = Event()):
+def extract_data(actions, videoAmount, desired_length, data_path, shape_size, stop_event = Event()):
     #create folder for each action
     i = 0
     for action in actions:
@@ -88,7 +88,7 @@ def extract_data(actions, videoAmount, desired_length, data_path, stop_event = E
 
                         #gets keypoints from extract_keypoints function
                         #keypoints = extract_keypoints(results)
-                        keypoints = extract_hand_keypoints(results)
+                        keypoints = extract_all_keypoints(results, shape_size)
                         
                         #sets path for numpy array
                         #npy_path = os.path.join(DATA_PATH, action, str(video), str(frame_num))
