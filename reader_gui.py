@@ -23,6 +23,7 @@ class Gui:
         self.model = Model(desired_length, self.actions, file_path)
         self.colors = [(245, 117, 16), (117, 245, 16), (16, 117, 245), (45, 117, 16), (117, 245, 16), (16, 117, 245)]
         #Make colors random or at least scale with more actions 
+        self.probabilities = [0, 0, 0, 0, 0]
 
     #Setups the gui
     def setup_gui(self):
@@ -49,11 +50,25 @@ class Gui:
 
     # Draws the signs and draws their probabilities
     def prob_viz(self, res, actions, input_frame, colors):
-        output_frame = input_frame.copy()
+        action_prob = []
         for num, prob in enumerate(res):
-            cv2.rectangle(output_frame, (0, 60 + num * 40), (int(prob * 100), 90 + num * 40), colors[num], -1)
-            cv2.putText(output_frame, f'{actions[num]}: {int(prob * 100)}%', (0, 85 + num * 40), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2,
+            action_prob.append([num, prob])
+        print(action_prob)
+        sorted_action_prob = sorted(action_prob, key = lambda i: i[0])
+        print(f'action_prob after {sorted_action_prob}')
+        output_frame = input_frame.copy()
+        for x in range(0, 6):
+            print(f'Printer X{x}')
+            cv2.rectangle(output_frame, (0, 60 + x * 40), (int(sorted_action_prob[x, 1] * 100), 90 + x * 40), colors[x], -1)
+            cv2.putText(output_frame, f'{actions[sorted_action_prob[x, 0]]}: {int(sorted_action_prob[x, 1] * 100)}%', (0, 85 + x * 40), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2,
                         cv2.LINE_AA)
+
+        # for num, prob in enumerate(res):
+        #     print(f'prop{prob}')
+        #     cv2.rectangle(output_frame, (0, 60 + num * 40), (int(prob * 100), 90 + num * 40), colors[num], -1)
+        #     cv2.putText(output_frame, f'{actions[num]}: {int(prob * 100)}%', (0, 85 + num * 40), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2,
+        #                 cv2.LINE_AA)
+
         return output_frame
 
 
