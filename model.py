@@ -74,8 +74,10 @@ class YubiModel:
     
     def save_confusion_matrix(self, confusion_matrix):
         #convert and save confusion matrix individually by action
-        for matrix in range(0, len(confusion_matrix)):
-            pd.DataFrame(confusion_matrix[matrix]).to_csv(f"{self.logs_path}/confusion_matrix_{self.actions[matrix]}.csv", sep=",")
+        with pd.ExcelWriter(f"{self.logs_path}/confusion_matrix.xlsx") as writer:
+            for matrix in range(0, len(confusion_matrix)):
+                cmdf = pd.DataFrame([confusion_matrix[matrix][0], confusion_matrix[matrix][1]], index=['Positive','Negative'], columns=['Positive','Negative'])
+                cmdf.to_excel(writer, sheet_name=self.actions[matrix])
 
     def save_training_info(self, accuracy, epochs, seed):
         #saves accuracy score as a simple txt file
