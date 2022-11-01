@@ -27,9 +27,8 @@ class TestIntegration(unittest.TestCase):
             for sequence in range (no_sequences):  
                 try:
                     data_amount += len(os.listdir(os.path.join(data_path, action, str(sequence))))
-
                 except:
-                    print('except from extract_and_train_model_test in test.training.py')
+                    print('Exception from extract_and_train_model_test in test_training.py')
             i += 1
 
 
