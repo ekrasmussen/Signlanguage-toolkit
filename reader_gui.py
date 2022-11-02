@@ -22,24 +22,22 @@ class Gui:
         self.mp_drawing = mp.solutions.drawing_utils
         self.holistic = self.mp_holistic.Holistic(min_detection_confidence=0.5, min_tracking_confidence=0.5)
         self.model = Model(desired_length, self.actions, file_path)
-        self.colors = [(0, 150, 255), (117, 245, 16), (245, 117, 16), (16, 117, 245), (45, 117, 16), (117, 245, 16), (16, 117, 245)]
-        #Make colors random or at least scale with more actions 
 
     #Setups the gui
     def setup_gui(self):
 
-        self.root.geometry("760x570")
-        self.root.title("ReaderGUI")
+        self.root.geometry("760x570") #Size of the window
+        self.root.title("ReaderGUI") #Window Title
 
-        canvas = tk.Canvas(self.root, width=800, height=600)
+        canvas = tk.Canvas(self.root, width=760, height=570)
         canvas.pack()
 
+        #frame holds the image
         frame = tk.Frame(width=640, height=480)
         frame.place(x=380, y=260, anchor= tk.CENTER)
-        global video_feed
+        global video_feed, checkbox_display_landmarks_var
         video_feed = tk.Label(frame)
         video_feed.place(x=0, y=0)
-        global checkbox_display_landmarks_var
         checkbox_display_landmarks_var = tk.IntVar()
 
         checkbox_display_landmarks = tk.Checkbutton(self.root, text='Display landmarks', variable = checkbox_display_landmarks_var, font=('Arial', 10))
@@ -49,38 +47,23 @@ class Gui:
         canvas.create_window(700, 530, window= button_save_as_text, anchor= tk.E)
 
     # Draws the signs and draws their probabilities
-    def prob_viz(self, res, actions, input_frame, colors):
+    def prob_viz(self, res, input_frame):
         action_prob = []
         for num, prob in enumerate(res):
             action_prob.append([num, prob])
+
         #Sorts the 2d list decending in value
         sorted_action_prob = sorted(action_prob, key = lambda i: i[1], reverse=True)
         output_frame = input_frame.copy()
+        
         #A loop that puts the 5 highest displayed on screen 
         for x in range(0, self.display_amount):
             cv2.rectangle(output_frame, (0, 60 + x * 40), (int(sorted_action_prob[x][1] * 100), 90 + x * 40), (0, 200, 93), -1)
-            cv2.putText(output_frame, f'{actions[sorted_action_prob[x][0]]}: {int(sorted_action_prob[x][1] * 100)}%', (0, 85 + x * 40), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2,
+            cv2.putText(output_frame, f'{self.actions[sorted_action_prob[x][0]]}: {int(sorted_action_prob[x][1] * 100)}%', (0, 85 + x * 40), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2,
                         cv2.LINE_AA)
         return output_frame
 
-
-    def viz(self, res, image):
-        if np.unique(self.model.predictions[-10:])[0]==np.argmax(res): 
-            if res[np.argmax(res)] > self.model.threshold: 
-                
-                if len(self.model.sentence) > 0: 
-                    if self.actions[np.argmax(res)] != self.model.sentence[-1]:
-                        self.model.sentence.append(self.actions[np.argmax(res)])
-                else:
-                    self.model.sentence.append(self.actions[np.argmax(res)])
-
-        if len(self.model.sentence) > 5: 
-            self.model.sentence = self.model.sentence[-5:]
-
-        # Viz probabilities
-        image = self.prob_viz(res, self.actions, image, self.colors)
-        return image
-    
+    #Draw landmarks
     def draw_landmarks(self, image, results):
         self.mp_drawing.draw_landmarks(image, results.face_landmarks,
                                 self.mp_holistic.FACEMESH_TESSELATION)  # Draws face landmarks
@@ -91,18 +74,27 @@ class Gui:
         self.mp_drawing.draw_landmarks(image, results.right_hand_landmarks,
                                 self.mp_holistic.HAND_CONNECTIONS)  # Draws right hand landmarks
 
-
+    #Save the current sentence in text 
     def save_to_text(self):
         now = datetime.now()
         dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
         with open('Sentences.txt', 'a') as f:
-            f.write(f' {dt_string}:{self.model.sentence} \n')
+            f.write(f'{dt_string}:{self.model.sentence} \n')
             f.close()
+   
+    #Draws sentence on image
+    def draw_sentence(self, image):
+        cv2.rectangle(image, (0,0), (640, 40), (0, 150, 255), -1)
+        cv2.putText(image, ' '.join(self.model.sentence), (3,30), 
+                    cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2, cv2.LINE_AA)
+        return image
 
+    #Start showing cam, cam overlay, and predict sign
     def start(self):
         ret, frame = self.cap.read()
         image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
+        #Scales image to fit the frame
         ratio = self.x_res / self.y_res
         window_height = 480
         window_width = int(window_height * ratio)
@@ -119,19 +111,14 @@ class Gui:
 
         is_desired_length, res = self.model.predict(keypoints)
 
+        #Checks if res is not empty
         if is_desired_length:
-            image = self.viz(res, image)
+            self.model.sentence_update(res)
+            image = self.prob_viz(res, image)
 
-        cv2.rectangle(image, (0,0), (640, 40), (0, 150, 255), -1)
-        cv2.putText(image, ' '.join(self.model.sentence), (3,30), 
-                    cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2, cv2.LINE_AA)
-        #global sentence
-        #image, sentence, predictions = start_read(keypoints, image, sequence, sentence, model)
-        #display_confidence_text(predictions)
+        image = self.draw_sentence(image)
 
-        #Setup for user webcam window
-      
-
+        #Displays the camera on gui
         img = image
         imgarr = Image.fromarray(img)
         imgtk = ImageTk.PhotoImage(imgarr)

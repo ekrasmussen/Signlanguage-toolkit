@@ -4,17 +4,18 @@ from tensorflow.keras.layers import LSTM, Dense
 
 
 class Model:
-
+    
+    #Constructor
     def __init__(self, desired_length, actions, file_path):
         self.desired_length = desired_length
         self.actions = actions
         self.model = self.load_model(file_path)
         self.sequence = []
-        self.sentence = [] #Maybe move sentence to Gui
+        self.sentence = [] 
         self.predictions = []
         self.threshold = 0.8
 
-    #file_path is the path to the h5 file 
+    #Creates/loads model. file_path is the path to the h5 file 
     def load_model(self, file_path):
         model = Sequential()
         model.add(LSTM(64, return_sequences=True, activation='relu', input_shape=(self.desired_length, 126)))
@@ -27,13 +28,26 @@ class Model:
         model.load_weights(file_path)
         return model
 
+    #Updates the sentence 
+    def sentence_update(self, res): 
+        if np.unique(self.predictions[-10:])[0]==np.argmax(res): 
+            if res[np.argmax(res)] > self.threshold: 
+                
+                if len(self.sentence) > 0: 
+                    if self.actions[np.argmax(res)] != self.sentence[-1]:
+                        self.sentence.append(self.actions[np.argmax(res)])
+                else:
+                    self.sentence.append(self.actions[np.argmax(res)])
 
+        if len(self.sentence) > 5: 
+            self.sentence = self.sentence[-5:]
+
+    #Gives a prediction based on given keypoint.
     def predict(self, keypoints):
-        # 2. Prediction logic
         self.sequence.append(keypoints)
         self.sequence = self.sequence[- self.desired_length:]
         
-        is_desired_length = False
+        is_desired_length = False #Is used outside of method to check if res is empty
         res = []
 
         if len(self.sequence) == self.desired_length:
