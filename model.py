@@ -9,6 +9,7 @@ from sklearn.metrics import multilabel_confusion_matrix, accuracy_score
 from datetime import datetime
 from tensorflow.keras.callbacks import EarlyStopping
 from threading import Event
+import configparser
 
 class YubiModel:
 
@@ -22,6 +23,7 @@ class YubiModel:
         self.is_test = is_test
         self.create_log()
         self.logs_path, self.timestamp = self.make_logs_path()
+        self.n_epochs = 0
        
     def create_model(self):
         #sets up sequential layers in neural network
@@ -39,6 +41,7 @@ class YubiModel:
 
         #compiles model using categorical_crossentropy due to multiple features being used
         model.compile(optimizer='Adam', loss='categorical_crossentropy', metrics=['categorical_accuracy'])
+
         return model
 
     def make_logs_path(self):
@@ -73,13 +76,15 @@ class YubiModel:
     
     def save_confusion_matrix(self, confusion_matrix):
         #convert and save confusion matrix individually by action
-        for matrix in range(0, len(confusion_matrix)):
-            pd.DataFrame(confusion_matrix[matrix]).to_csv(f"{self.logs_path}/confusion_matrix_{self.actions[matrix]}.csv", sep=",")
+        with pd.ExcelWriter(f"{self.logs_path}/confusion_matrix.xlsx") as writer:
+            for matrix in range(0, len(confusion_matrix)):
+                cmdf = pd.DataFrame([confusion_matrix[matrix][0], confusion_matrix[matrix][1]], index=['Positive','Negative'], columns=['Positive','Negative'])
+                cmdf.to_excel(writer, sheet_name=self.actions[matrix])
 
-    def save_training_info(self, accuracy, epochs, seed):
+    def save_training_info(self, accuracy, seed):
         #saves accuracy score as a simple txt file
         file = open(f"{self.logs_path}/training_info.txt", "w+")
-        file.write(f"Accuracy: {accuracy}\nDesired length: {self.desired_length}\nEpochs: {epochs}\nSeed: {seed}")
+        file.write(f"Accuracy: {accuracy}\nDesired length: {self.desired_length}\nEpochs: {self.n_epochs}\nSeed: {seed}")
         file.close()
     
     def train_model(self, epochs_amount, videoAmount, seed, stop_event = Event()):
@@ -149,5 +154,17 @@ class YubiModel:
 
             #creates and saves training info
             accuracy = accuracy_score(ytrue, yhat)
-            n_epochs = len(m.history['loss'])
-            self.save_training_info(accuracy, n_epochs, seed)
+            self.n_epochs = len(m.history['loss'])
+            self.save_training_info(accuracy, seed)
+
+    def save_as_config_file(self):
+        config = configparser.ConfigParser()
+        config.add_section('Model')
+
+        config['Model']['Length'] = str(self.desired_length)
+        config['Model']['Shape'] = str(self.shape)
+        config['Model']['Actions set'] = str(self.actions)
+
+        with open(f'{self.timestamp}.ini', 'w') as configfile:
+            config.write(configfile)
+
