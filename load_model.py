@@ -30,11 +30,12 @@ class Model:
 
     #Updates the sentence 
     def sentence_update(self, res): 
+        print(f'res {res}')
         if np.unique(self.predictions[-10:])[0]==np.argmax(res): 
             if res[np.argmax(res)] > self.threshold: 
                 
                 if len(self.sentence) > 0: 
-                    if self.actions[np.argmax(res)] != self.sentence[-1]:
+                    if self.actions[np.argmax(res)] != self.sentence[-1]: #Checks that the predicted sign is not the same as the last one
                         self.sentence.append(self.actions[np.argmax(res)])
                 else:
                     self.sentence.append(self.actions[np.argmax(res)])

@@ -36,12 +36,15 @@ class VideoReader:
 
             else:
                 break
-        self.save_to_text()
 
-    #Saves the sentence in a txt document
-    def save_to_text(self):
         now = datetime.now()
         dt_string = now.strftime("%d-%m-%Y %H-%M-%S")
-        with open(f'Sentence_{dt_string}.txt', 'a') as f:
-            f.write(f'{dt_string}:{self.model.sentence} \n')
+        self.save_to_text(dt_string)
+        return dt_string #returns so tests can get the txt file
+
+    #Saves the sentence in a txt document
+    def save_to_text(self, dt_string):
+
+        with open(f'Sentences\Sentence_{dt_string}.txt', 'a') as f:
+            f.write(f'{self.model.sentence} \n')
             f.close()

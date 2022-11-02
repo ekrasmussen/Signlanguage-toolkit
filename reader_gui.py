@@ -55,7 +55,7 @@ class Gui:
         #Sorts the 2d list decending in value
         sorted_action_prob = sorted(action_prob, key = lambda i: i[1], reverse=True)
         output_frame = input_frame.copy()
-        
+
         #A loop that puts the 5 highest displayed on screen 
         for x in range(0, self.display_amount):
             cv2.rectangle(output_frame, (0, 60 + x * 40), (int(sorted_action_prob[x][1] * 100), 90 + x * 40), (0, 200, 93), -1)
@@ -78,7 +78,7 @@ class Gui:
     def save_to_text(self):
         now = datetime.now()
         dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
-        with open('Sentences.txt', 'a') as f:
+        with open('Sentences\Sentences.txt', 'a') as f:
             f.write(f'{dt_string}:{self.model.sentence} \n')
             f.close()
    
