@@ -1,4 +1,3 @@
-from tkinter import filedialog
 from detect import *
 from model import *
 from extract_datapoints import *
@@ -98,7 +97,7 @@ class Gui:
         spinbox_seed = tk.Spinbox(self.root,textvariable=desired_seed, from_= 1, to=100000)
         canvas.create_window(spinboxx,150, window=spinbox_seed, anchor=tk.W)
 
-                #Decide shape
+        #Decide shape
         shape_pos_x = 85
         label_keypoints_y = 200
         label_keypoints = tk.Label(self.root, text="Keypoints:", font=('Arial', 10))
@@ -109,7 +108,9 @@ class Gui:
 
         checkbox_face_shape = tk.Checkbutton(self.root, text='Face', font=('Arial', 10), variable=checkbox_face_value, onvalue=KEYPOINTS_FACE_AMOUNT, offvalue=0)
         checkbox_pose_shape = tk.Checkbutton(self.root, text='Pose', font=('Arial', 10), variable=checkbox_pose_value, onvalue=KEYPOINTS_POSE_AMOUNT, offvalue=0)
-        checkbox_hands_shape = tk.Checkbutton(self.root, text='Hands', font=('Arial', 10), variable=checkbox_hands_value, onvalue=KEYPOINTS_HANDS_AMOUNT, offvalue=0)
+        checkbox_hands_shape = tk.Checkbutton(self.root, text='Hands', font=('Arial', 10), state='disabled', variable=checkbox_hands_value, onvalue=KEYPOINTS_HANDS_AMOUNT, offvalue=0)
+
+        checkbox_hands_shape.select() # Makes sure the landmarks from hands are on as default
 
         canvas.create_window(shape_pos_x, 225, window=checkbox_face_shape, anchor=tk.W)
         canvas.create_window(shape_pos_x, 250, window=checkbox_pose_shape, anchor=tk.W)
@@ -174,4 +175,3 @@ class Gui:
         if self.thread is not None:
             self.stop_thread()
         self.root.destroy()
-        
