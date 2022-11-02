@@ -10,32 +10,32 @@ from readerPrediction import mediapipe_detection
 class Gui:
 
     #Constructor
-    def __init__(self, desired_length, actions, file_path, x_res, y_res):
+    def __init__(self, desired_length, actions, file_path, x_res, y_res, display_amount):
         self.root = tk.Tk()
         self.actions = actions
         self.x_res = x_res
         self.y_res = y_res
+        self.display_amount = display_amount 
         self.cap = cv2.VideoCapture(0, apiPreference=cv2.CAP_ANY, params=[cv2.CAP_PROP_FRAME_WIDTH, x_res,
             cv2.CAP_PROP_FRAME_HEIGHT, y_res])
         self.mp_holistic = mp.solutions.holistic
         self.mp_drawing = mp.solutions.drawing_utils
         self.holistic = self.mp_holistic.Holistic(min_detection_confidence=0.5, min_tracking_confidence=0.5)
         self.model = Model(desired_length, self.actions, file_path)
-        self.colors = [(245, 117, 16), (117, 245, 16), (16, 117, 245), (45, 117, 16), (117, 245, 16), (16, 117, 245)]
+        self.colors = [(0, 150, 255), (117, 245, 16), (245, 117, 16), (16, 117, 245), (45, 117, 16), (117, 245, 16), (16, 117, 245)]
         #Make colors random or at least scale with more actions 
-        self.probabilities = [0, 0, 0, 0, 0]
 
     #Setups the gui
     def setup_gui(self):
 
-        self.root.geometry("800x600")
+        self.root.geometry("760x570")
         self.root.title("ReaderGUI")
 
         canvas = tk.Canvas(self.root, width=800, height=600)
         canvas.pack()
 
-        frame = tk.Frame(height=480, width=480)
-        frame.place(x=300, y=300, anchor= tk.CENTER)
+        frame = tk.Frame(width=640, height=480)
+        frame.place(x=380, y=260, anchor= tk.CENTER)
         global video_feed
         video_feed = tk.Label(frame)
         video_feed.place(x=0, y=0)
@@ -43,33 +43,24 @@ class Gui:
         checkbox_display_landmarks_var = tk.IntVar()
 
         checkbox_display_landmarks = tk.Checkbutton(self.root, text='Display landmarks', variable = checkbox_display_landmarks_var, font=('Arial', 10))
-        canvas.create_window(300, 20, window = checkbox_display_landmarks)
+        canvas.create_window(60, 530, window = checkbox_display_landmarks, anchor= tk.W)
 
         button_save_as_text = tk.Button(self.root, text='Save as text file', font= ('Arial', 10), command= self.save_to_text)
-        canvas.create_window(600, 270, window= button_save_as_text, anchor= tk.NW)
+        canvas.create_window(700, 530, window= button_save_as_text, anchor= tk.E)
 
     # Draws the signs and draws their probabilities
     def prob_viz(self, res, actions, input_frame, colors):
         action_prob = []
         for num, prob in enumerate(res):
             action_prob.append([num, prob])
-        print(action_prob)
-        sorted_action_prob = sorted(action_prob, key = lambda i: i[1])
-        print(f'action_prob after {sorted_action_prob[0][1]}')
+        #Sorts the 2d list decending in value
+        sorted_action_prob = sorted(action_prob, key = lambda i: i[1], reverse=True)
         output_frame = input_frame.copy()
-        for x in range(0, 5):
-            print(f'Printer X{x}')
-            cv2.rectangle(output_frame, (0, 60 + x * 40), (int(sorted_action_prob[x][1] * 100), 90 + x * 40), colors[x], -1)
+        #A loop that puts the 5 highest displayed on screen 
+        for x in range(0, self.display_amount):
+            cv2.rectangle(output_frame, (0, 60 + x * 40), (int(sorted_action_prob[x][1] * 100), 90 + x * 40), (0, 200, 93), -1)
             cv2.putText(output_frame, f'{actions[sorted_action_prob[x][0]]}: {int(sorted_action_prob[x][1] * 100)}%', (0, 85 + x * 40), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2,
                         cv2.LINE_AA)
-            print(f'actions with sort: {actions[sorted_action_prob[x][0]]}')
-
-        # for num, prob in enumerate(res):
-        #     print(f'prop{prob}')
-        #     cv2.rectangle(output_frame, (0, 60 + num * 40), (int(prob * 100), 90 + num * 40), colors[num], -1)
-        #     cv2.putText(output_frame, f'{actions[num]}: {int(prob * 100)}%', (0, 85 + num * 40), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2,
-        #                 cv2.LINE_AA)
-
         return output_frame
 
 
@@ -111,6 +102,14 @@ class Gui:
     def start(self):
         ret, frame = self.cap.read()
         image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+
+        ratio = self.x_res / self.y_res
+        window_height = 480
+        window_width = int(window_height * ratio)
+        window_dimensions = (window_width, window_height)
+
+        image = cv2.resize(image, window_dimensions)
+
         results = self.holistic.process(image)
 
         if checkbox_display_landmarks_var.get(): # In python 0 is equal to false, and 1 is equal to true
@@ -123,7 +122,7 @@ class Gui:
         if is_desired_length:
             image = self.viz(res, image)
 
-        cv2.rectangle(image, (0,0), (640, 40), (245, 117, 16), -1)
+        cv2.rectangle(image, (0,0), (640, 40), (0, 150, 255), -1)
         cv2.putText(image, ' '.join(self.model.sentence), (3,30), 
                     cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2, cv2.LINE_AA)
         #global sentence
@@ -131,12 +130,7 @@ class Gui:
         #display_confidence_text(predictions)
 
         #Setup for user webcam window
-        ratio = self.x_res / self.y_res
-        window_height = 480
-        window_width = int(window_height * ratio)
-        window_dimensions = (window_width, window_height)
-
-        image = cv2.resize(image, window_dimensions)
+      
 
         img = image
         imgarr = Image.fromarray(img)
