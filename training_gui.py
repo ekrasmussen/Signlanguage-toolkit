@@ -20,6 +20,7 @@ class Gui:
         #Initialize a window
         self.root = tk.Tk()
         self.data_path = data_path
+        self.videos_path = "Training_videos"
         self.actions_dictionary = actions_dictionary
         self.stop_event = Event()
         self.stop_event.clear()
@@ -28,23 +29,37 @@ class Gui:
     def start_gui(self):
         labelx = 50
         spinboxx = 200
-        self.root.geometry("450x395")
+        self.root.geometry("450x430")
         self.root.title(f"Training & extract")
 
         self.root.resizable(0,0)
-        canvas = tk.Canvas(self.root, width=450, height=395)
+        canvas = tk.Canvas(self.root, width=450, height=430)
         canvas.pack()
 
         #Label that shows directory
-        global label_directory_text
-        label_directory_text = tk.StringVar()
-        label_directory_text.set(self.create_path_label(f'Directory: {self.data_path}'))
-        label_directory = tk.Label(self.root, font=('Arial', 10), textvariable=label_directory_text)
-        canvas.create_window(labelx, 325, window=label_directory, anchor=tk.W)
+        global label_output_folder_text
+        label_output_folder_text = tk.StringVar()
+        label_output_folder_text.set(self.create_path_label(f'Directory: {self.data_path}'))
+        label_output_folder = tk.Label(self.root, font=('Arial', 10), textvariable=label_output_folder_text)
+        canvas.create_window(450 - labelx, 325, window=label_output_folder, anchor=tk.E)
 
         #Button for selecting directory for training data
-        directory_button = tk.Button(self.root, text="Select directory", font=('Arial', 10), command=self.select_directory)
-        canvas.create_window(labelx, 355, window=directory_button, anchor=tk.W)
+        button_output_folder = tk.Button(self.root, text="Select Extract Folder", font=('Arial', 10), command=self.select_output_directory)
+        canvas.create_window(450 - labelx, 355, window=button_output_folder, anchor=tk.E)
+
+
+
+
+        #Labels for Video Folder
+        global label_videos_folder_text
+        label_videos_folder_text = tk.StringVar()
+        label_videos_folder_text.set(self.create_path_label(f'Videos: {self.videos_path}'))
+        label_videos_folder = tk.Label(self.root, font=("Arial", 10), textvariable=label_videos_folder_text)
+        canvas.create_window(labelx, 325, window=label_videos_folder, anchor=tk.W)
+
+        button_videos_folder = tk.Button(self.root, text="Select Videos Folder", font=("Arial", 10), command=self.select_input_directory)
+        canvas.create_window(labelx, 355, window=button_videos_folder, anchor=tk.W)
+
 
         #Extract checkbox
         #Used to get the value the checkbox is in
@@ -120,7 +135,7 @@ class Gui:
 
         #Button for starting the process assigned to thread
         button_start = tk.Button(self.root, text="Start", font=('Arial', 10), command=lambda : self.start_thread(checkbox_extract_value, clicked, desired_length, desired_epochs, desired_seed, self.get_shape_size(checkbox_face_value, checkbox_pose_value, checkbox_hands_value)))
-        canvas.create_window(370, 355, window=button_start, anchor=tk.E)
+        canvas.create_window(450 / 2, 400, window=button_start, anchor=tk.CENTER)
 
         #In the event that user closes window, run x method
         self.root.protocol("WM_DELETE_WINDOW", self.on_closing)
@@ -141,24 +156,32 @@ class Gui:
     def execute_train(self, should_extract_data, clicked, frames, epochs, seed, shape_size):
         actions = self.actions_dictionary[clicked.get()]
         #try:    
-        videos = count_videos(actions)
+        videos = count_videos(self.videos_path, actions)
         desired_length = frames.get()
         epochs_amount = epochs.get()
         seed = seed.get()
 
         if should_extract_data.get():
-            extract_data(actions, videos, desired_length, self.data_path, shape_size, self.stop_event)
+            extract_data(actions, videos, desired_length, self.data_path, shape_size, self.videos_path, self.stop_event)
         model = YubiModel(desired_length, shape_size, actions, self.data_path)
         model.train_model(epochs_amount, videos, seed, self.stop_event)
         #except:
             #print('Error! Something went wrong.')
+    
+    def select_input_directory(self):
+        directory = filedialog.askdirectory(title="Select directory for recorded videos")
+        if directory:
+            self.videos_path = directory
+            global label_videos_folder_text
+            label_videos_folder_text.set(self.create_path_label(f"Videos: {self.videos_path}"))
 
-    def select_directory(self):
+
+    def select_output_directory(self):
         directory = filedialog.askdirectory(title="Select directory for training data")
         if directory:
             self.data_path = directory
-            global label_directory_text
-            label_directory_text.set(self.create_path_label(f"Directory: {self.data_path}"))
+            global label_output_folder_text
+            label_output_folder_text.set(self.create_path_label(f"Directory: {self.data_path}"))
     
     def get_shape_size(self, checkbox_1, checkbox_2, checkbox_3):
         result = checkbox_1.get() + checkbox_2.get() + checkbox_3.get()
