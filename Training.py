@@ -46,9 +46,7 @@ if __name__ == "__main__":
             shape = shape + 132
         
         if args.extract:
-
-
             extract_data(ACTIONS, VIDEO_AMOUNT, DESIRED_LENGTH, data_path, shape)
-            
+
         model = YubiModel(DESIRED_LENGTH, shape, ACTIONS, data_path)
         model.train_model(EPOCHS_AMOUNT, VIDEO_AMOUNT, SEED)
