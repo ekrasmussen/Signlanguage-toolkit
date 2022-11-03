@@ -2,6 +2,7 @@ from detect import *
 from model import *
 from extract_datapoints import *
 import tkinter as tk
+from tkinter import filedialog
 from threading import Thread, Event
 
 #21 keypoints * 2 hands * 3 scalars per keypoint (x, y, z)
@@ -37,7 +38,7 @@ class Gui:
         #Label that shows directory
         global label_directory_text
         label_directory_text = tk.StringVar()
-        label_directory_text.set(f'Directory: {self.data_path}')
+        label_directory_text.set(self.create_path_label(f'Directory: {self.data_path}'))
         label_directory = tk.Label(self.root, font=('Arial', 10), textvariable=label_directory_text)
         canvas.create_window(labelx, 325, window=label_directory, anchor=tk.W)
 
@@ -126,7 +127,17 @@ class Gui:
     
 
         self.root.mainloop()
-
+    
+    #To limit the length of the paths when shown in labels
+    def create_path_label(self,input):
+        formatted_str = input
+        
+        #If path is longer than 25 we add dots at the end after 25 characters
+        if len(formatted_str) > 25:
+            formatted_str = formatted_str[0:25] + "..."
+        
+        return formatted_str
+    
     def execute_train(self, should_extract_data, clicked, frames, epochs, seed, shape_size):
         actions = self.actions_dictionary[clicked.get()]
         #try:    
@@ -147,7 +158,7 @@ class Gui:
         if directory:
             self.data_path = directory
             global label_directory_text
-            label_directory_text.set(self.data_path)
+            label_directory_text.set(self.create_path_label(f"Directory: {self.data_path}"))
     
     def get_shape_size(self, checkbox_1, checkbox_2, checkbox_3):
         result = checkbox_1.get() + checkbox_2.get() + checkbox_3.get()
