@@ -39,12 +39,14 @@ if __name__ == "__main__":
         gui.start_gui()
     else:
         #If you start the program with --extract behind it, it will extract data and train, if you start the program normally you only train.
+        shape = 126
+        if args.face:
+            shape = shape + 1404
+        if args.pose:
+            shape = shape + 132
+        
         if args.extract:
-            shape = 126
-            if args.face:
-                shape = shape + 1404
-            if args.pose:
-                shape = shape + 132
+
 
             extract_data(ACTIONS, VIDEO_AMOUNT, DESIRED_LENGTH, data_path, shape)
             
