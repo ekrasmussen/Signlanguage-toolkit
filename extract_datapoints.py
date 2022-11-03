@@ -7,12 +7,12 @@ from detect import *
 from progress.bar import Bar
 from threading import Event
 
-def count_videos(actions):
+def count_videos(video_path, actions):
     print("Counting Videos...")
     videoAmount = np.zeros(actions.size, dtype=int)
     i = 0
     for action in actions:
-        videoAmount[i] = len(os.listdir(f'Training_videos\{action}'))
+        videoAmount[i] = len(os.listdir(f'{video_path}\{action}'))
         i += 1
     return videoAmount
 
@@ -25,7 +25,7 @@ def is_stop_requested(event):
         should_stop = True
     return should_stop
 
-def extract_data(actions, videoAmount, desired_length, data_path, shape_size, stop_event = Event()):
+def extract_data(actions, videoAmount, desired_length, data_path, shape_size, video_path, stop_event = Event()):
     #create folder for each action
     i = 0
     for action in actions:
@@ -49,7 +49,7 @@ def extract_data(actions, videoAmount, desired_length, data_path, shape_size, st
                 break
 
             #gets list of videos
-            video_list = os.listdir(f'Training_videos\{action}')
+            video_list = os.listdir(f'{video_path}\{action}')
 
             video_number = 0
 
@@ -60,7 +60,7 @@ def extract_data(actions, videoAmount, desired_length, data_path, shape_size, st
                         break
 
                     #grabs video
-                    cap = cv2.VideoCapture(f'Training_videos\{action}\{video}')
+                    cap = cv2.VideoCapture(f'{video_path}\{action}\{video}')
                     #counts amount of frames in video
                     video_length = cap.get(cv2.CAP_PROP_FRAME_COUNT)
                     #if video is shorter than desired amount of frames start frame is set to 0
