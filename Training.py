@@ -14,8 +14,6 @@ ACTIONSDICT = {"Default": np.array(['A', 'B', 'C', 'D', 'E', 'Idle']), "Yubi-yay
 
 ACTIONS = ACTIONSDICT["Default"]
 
-VIDEO_AMOUNT = count_videos(ACTIONS)
-
 #Determents how many frames of the video is used
 DESIRED_LENGTH = 15
 
@@ -31,7 +29,9 @@ if __name__ == "__main__":
     parser.add_argument("--gui", default=False, action="store_true")
     parser.add_argument("--face", default=False, action="store_true")
     parser.add_argument("--pose",default=False, action="store_true")
+    parser.add_argument('--path',type=str, required=False, default='Training_videos', help='path for Training videos (default "Training_videos")')
     args = parser.parse_args()
+    video_amount = count_videos(args.path, ACTIONS)
 
     if args.gui:
         #If the gui argument is present, launch gui instead of tui
@@ -46,7 +46,7 @@ if __name__ == "__main__":
             shape = shape + 132
         
         if args.extract:
-            extract_data(ACTIONS, VIDEO_AMOUNT, DESIRED_LENGTH, data_path, shape)
+            extract_data(ACTIONS, video_amount, DESIRED_LENGTH, data_path, shape, args.path)
 
         model = YubiModel(DESIRED_LENGTH, shape, ACTIONS, data_path)
-        model.train_model(EPOCHS_AMOUNT, VIDEO_AMOUNT, SEED)
+        model.train_model(EPOCHS_AMOUNT, video_amount, SEED)
