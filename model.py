@@ -88,7 +88,7 @@ class YubiModel:
         file.close()
     
     def train_model(self, epochs_amount, videoAmount, seed, stop_event = Event()):
-        if not stop_event.isSet():
+        if not stop_event.is_set():
             #maps labels to numbers
             label_map = {label:num for num, label in enumerate(self.actions)}
 
