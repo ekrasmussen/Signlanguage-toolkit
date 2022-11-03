@@ -36,7 +36,7 @@ def create_labels(output_folder_name, labels):
 
 #Records webcam
 def webcam_record(labels, fps, recordtime, breaktime, amount, output):
-    camera = cv2.VideoCapture(0, apiPreference=cv2.CAP_ANY, params=[cv2.CAP_PROP_FRAME_WIDTH, camera_width,
+    camera = cv2.VideoCapture(0, cv2.CAP_DSHOW, params=[cv2.CAP_PROP_FRAME_WIDTH, camera_width,
     cv2.CAP_PROP_FRAME_HEIGHT, camera_height])
 
     #Setup for user webcam window

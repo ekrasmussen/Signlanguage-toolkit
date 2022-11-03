@@ -156,6 +156,7 @@ class YubiModel:
             accuracy = accuracy_score(ytrue, yhat)
             self.n_epochs = len(m.history['loss'])
             self.save_training_info(accuracy, seed)
+            self.save_as_config_file()
 
     def save_as_config_file(self):
         config = configparser.ConfigParser()
