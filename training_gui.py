@@ -39,7 +39,7 @@ class Gui:
         #Label that shows directory
         global label_output_folder_text
         label_output_folder_text = tk.StringVar()
-        label_output_folder_text.set(self.create_path_label(f'Directory: {self.data_path}'))
+        label_output_folder_text.set(self.create_path_label(f'Extract to: {self.data_path}'))
         label_output_folder = tk.Label(self.root, font=('Arial', 10), textvariable=label_output_folder_text)
         canvas.create_window(450 - labelx, 325, window=label_output_folder, anchor=tk.E)
 
@@ -181,7 +181,7 @@ class Gui:
         if directory:
             self.data_path = directory
             global label_output_folder_text
-            label_output_folder_text.set(self.create_path_label(f"Directory: {self.data_path}"))
+            label_output_folder_text.set(self.create_path_label(f"Extract to: {self.data_path}"))
     
     def get_shape_size(self, checkbox_1, checkbox_2, checkbox_3):
         result = checkbox_1.get() + checkbox_2.get() + checkbox_3.get()
