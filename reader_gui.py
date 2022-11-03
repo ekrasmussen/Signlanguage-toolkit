@@ -5,7 +5,6 @@ import cv2
 from PIL import Image, ImageTk
 from detect import *
 from load_model import *
-from readerPrediction import mediapipe_detection
 
 class Gui:
 
@@ -49,6 +48,7 @@ class Gui:
     # Draws the signs and draws their probabilities
     def prob_viz(self, res, input_frame):
         action_prob = []
+        #Enumerates over the results to create a 2d list of actions index and their confidence score
         for num, prob in enumerate(res):
             action_prob.append([num, prob])
 
@@ -125,4 +125,4 @@ class Gui:
         video_feed.imgtk = imgtk
         video_feed.configure(image=imgtk)
         video_feed.after(10, self.start)
-
+        self.root.mainloop()

@@ -38,7 +38,6 @@ if __name__ == "__main__":
         gui = Gui(desired_length, actions, file_path, x_res, y_res, display_amount)
         gui.setup_gui()
         gui.start()
-        gui.root.mainloop()
     else:
         video_reader = VideoReader(desired_length, actions, file_path, video_path)
         video_reader.start()
