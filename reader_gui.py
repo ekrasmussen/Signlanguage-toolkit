@@ -9,18 +9,23 @@ from load_model import *
 class Gui:
 
     #Constructor
-    def __init__(self, desired_length, actions, file_path, x_res, y_res, display_amount):
+    def __init__(self, file_path, x_res, y_res, display_amount):
         self.root = tk.Tk()
-        self.actions = actions
         self.x_res = x_res
         self.y_res = y_res
-        self.display_amount = display_amount 
         self.cap = cv2.VideoCapture(0, apiPreference=cv2.CAP_ANY, params=[cv2.CAP_PROP_FRAME_WIDTH, x_res,
             cv2.CAP_PROP_FRAME_HEIGHT, y_res])
         self.mp_holistic = mp.solutions.holistic
         self.mp_drawing = mp.solutions.drawing_utils
         self.holistic = self.mp_holistic.Holistic(min_detection_confidence=0.5, min_tracking_confidence=0.5)
-        self.model = Model(desired_length, self.actions, file_path)
+        self.model = Model(file_path)
+        self.actions = self.model.actions
+
+        #Makes sure that display_amount isn't too high
+        if(display_amount > len(self.actions)):
+            self.display_amount = len(self.actions)
+        else:
+            self.display_amount = display_amount
 
     #Setups the gui
     def setup_gui(self):
@@ -107,7 +112,7 @@ class Gui:
         if checkbox_display_landmarks_var.get(): # In python 0 is equal to false, and 1 is equal to true
             self.draw_landmarks(image, results)
 
-        keypoints = extract_hand_keypoints(results)
+        keypoints = extract_all_keypoints(results, self.model.shape)
 
         is_desired_length, res = self.model.predict(keypoints)
 
@@ -125,4 +130,3 @@ class Gui:
         video_feed.imgtk = imgtk
         video_feed.configure(image=imgtk)
         video_feed.after(10, self.start)
-        self.root.mainloop()
