@@ -2,7 +2,6 @@ import argparse
 from reader_gui import *
 from reader_video import *
 
-actions = np.array(['A', 'B', 'C', 'D', 'E', 'Idle'])
 
 #Setup arguments
 def setup():
@@ -13,7 +12,6 @@ def setup():
     parser.add_argument('--yres', type=int, required=False, default=480, help='Height of camera resolution. (Default 480)')
     parser.add_argument('--displayamount', type=int, required=False, default=5, help='The amount of signs displayed when running gui (Default 5)')
     parser.add_argument('--videopath',type=str, required=False, default='Test_video.mov', help='The path to the video that is gonna be read (Default "Test_video.mov")')
-    #actions to be added when yubi-yay done
     args = parser.parse_args()
     return args
 
