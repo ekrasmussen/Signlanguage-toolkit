@@ -16,15 +16,16 @@ This repository is a pre-built toolkit aimed for training, recording and testing
   
 - [How it works](#how-it-works)  
 - [How to use](#how-to-use)  
-* [Prerequisites](#prerequisites)  
-* [Recorder](#recorder)  
-+ [Parameters](#parameters)  
-* [Recorder - GUI](#recorder---gui)  
-* [Trainer](#trainer)  
-+ [First run](#first-run)  
-* [Trainer - GUI](#trainer---gui)  
-* [Reader](#reader)  
-* [Reader - GUI](#reader---gui)  
+  * [Prerequisites](#prerequisites)  
+  * [Recorder](#recorder)  
+    + [Parameters](#recorder-parameters)  
+  * [Recorder - GUI](#recorder---gui)  
+  * [Trainer](#trainer)
+    + [Parameters](#trainer-parameters) 
+    + [First run](#first-run)  
+  * [Trainer - GUI](#trainer---gui)  
+  * [Reader](#reader)  
+  * [Reader - GUI](#reader---gui)  
 - [Roadmap](#roadmap)  
   
   
@@ -100,7 +101,7 @@ python Record.py Label1 Label2 Label3
 ```  
 In the above example, 3 folders will be created, and you are instructed to record for each label. If you want to record more videos for the same label, simply use it again during a future recording session.  
   
-### Parameters  
+### Recorder Parameters  
 Recorder takes certain arguments to customize how the recording session is going to go. It is recommended to use these for more desired results:  
   
 - ``--output <Directory name>``: customize the name of the folder which the label directories and videos will reside in, directory will be created if it doesn't exist. Default = "Recordings"  
@@ -176,7 +177,7 @@ Repo Folder
   
 ```  
   
-  ### Parameters  
+### Trainer Parameters  
 Trainer takes certain arguments to customize which keypoints are extracted and training customization. It is recommended to use these for more accurate model: 
   
 - ``--extract <boolean>``: enables extraction of keypoints. Default = False
