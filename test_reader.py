@@ -12,10 +12,10 @@ class TestReader(unittest.TestCase):
         #arange
         desired_length = 10
         actions = actions = np.array(['A', 'B', 'C', 'D', 'E', 'Idle'])
-        file_path = 'epoch_400_frames_10.h5'
+        file_path = 'epoch_400_frames_10'
         video_path = 'Test_video.mov'
 
-        video_reader = VideoReader(desired_length, actions, file_path, video_path)
+        video_reader = VideoReader(file_path, video_path)
 
         #act
         dt_string = video_reader.start()

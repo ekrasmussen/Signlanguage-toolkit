@@ -8,13 +8,13 @@ import os
 class VideoReader:
 
     #Constructor
-    def __init__(self, desired_length, actions, file_path, video_path):
-            self.actions = actions
+    def __init__(self, file_path, video_path):
             self.cap = cv2.VideoCapture(video_path)
             self.mp_holistic = mp.solutions.holistic
             self.mp_drawing = mp.solutions.drawing_utils
             self.holistic = self.mp_holistic.Holistic(min_detection_confidence=0.5, min_tracking_confidence=0.5)
-            self.model = Model(desired_length, self.actions, file_path)
+            self.model = Model(file_path)
+            self.actions = self.model.actions
 
     #Gets image and predicts sign
     def start(self):
