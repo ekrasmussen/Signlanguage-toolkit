@@ -1,5 +1,4 @@
 import unittest
-from Training import DESIRED_LENGTH
 from model import *
 import configparser
 import numpy as np
