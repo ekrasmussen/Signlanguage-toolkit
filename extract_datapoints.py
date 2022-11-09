@@ -9,12 +9,12 @@ from threading import Event
 
 def count_videos(video_path, actions):
     print("Counting Videos...")
-    videoAmount = np.zeros(actions.size, dtype=int)
+    video_amount = np.zeros(actions.size, dtype=int)
     i = 0
     for action in actions:
-        videoAmount[i] = len(os.listdir(f'{video_path}\{action}'))
+        video_amount[i] = len(os.listdir(f'{video_path}\{action}'))
         i += 1
-    return videoAmount
+    return video_amount
 
 #Check if the event passed from the gui has been set. If so, return True
 def is_stop_requested(event):
@@ -25,11 +25,11 @@ def is_stop_requested(event):
         should_stop = True
     return should_stop
 
-def extract_data(actions, videoAmount, desired_length, data_path, shape_size, video_path, stop_event = Event()):
+def extract_data(actions, video_amount, desired_length, data_path, shape_size, video_path, stop_event = Event()):
     #create folder for each action
     i = 0
     for action in actions:
-        no_sequences = videoAmount[i]
+        no_sequences = video_amount[i]
         #use video in video_list at some point Look down below for help
         for sequence in range (no_sequences):  
             try:

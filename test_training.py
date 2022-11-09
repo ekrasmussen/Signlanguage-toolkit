@@ -2,6 +2,7 @@ import unittest
 from detect import *
 from model import *
 from Training import *
+import shutil
 import os
 
 
@@ -10,13 +11,17 @@ class TestIntegration(unittest.TestCase):
     
     #Checks that the program can extract and train data
     def test_extract_and_train_model(self):
+        ACTIONS = np.array(['A', 'B', 'C', 'D', 'E', 'Idle', 'DROPPER', 'HVOR', 'HUE', 'JUBILÆUM', 'SEJR'])
+        VIDEO_AMOUNT = count_videos("Training_videos", ACTIONS)
+        #Remove MP_Data Since it can contain previous videos, meaning the test potentially fails
+        shutil.rmtree('MP_Data')
+        extract_data(ACTIONS, VIDEO_AMOUNT, 15, data_path, 126, "Training_videos")
 
-
-        extract_data(ACTIONS, VIDEO_AMOUNT, DESIRED_LENGTH, data_path)
-
-        model = YubiModel(DESIRED_LENGTH, SHAPE, ACTIONS, data_path)
+        model = YubiModel(DESIRED_LENGTH, 126, ACTIONS, data_path)
         model.train_model(EPOCHS_AMOUNT, VIDEO_AMOUNT, SEED)
 
+
+        
 
         i = 0
         data_amount = 0
@@ -27,13 +32,14 @@ class TestIntegration(unittest.TestCase):
             for sequence in range (no_sequences):  
                 try:
                     data_amount += len(os.listdir(os.path.join(data_path, action, str(sequence))))
+                    print(data_amount)
                 except:
                     print('Exception from extract_and_train_model_test in test_training.py')
             i += 1
 
 
-        #Checks that the correct amount of numpy array are created
-        self.assertEqual(data_amount, test_video_amount * DESIRED_LENGTH)
+        #Checks that the correct amount of numpy arrays are created
+        self.assertEqual(data_amount, test_video_amount * 15)
         #Checks that the model has trained
         self.assertGreater(model.n_epochs, 0)
 

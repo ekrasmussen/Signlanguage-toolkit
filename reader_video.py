@@ -17,6 +17,7 @@ class VideoReader:
             self.actions = self.model.actions
 
     #Gets image and predicts sign
+    #Requirement is for the corresponding h5 file has a ini file of same name
     def start(self):
         while(self.cap.isOpened()):
             ret, frame = self.cap.read()

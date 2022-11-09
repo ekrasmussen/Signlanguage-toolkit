@@ -7,6 +7,7 @@ import numpy as np
 class TestReader(unittest.TestCase):
 
     #Test if reader_video can predict on a video, and save the sentence to text
+    #Requirement is for the corresponding h5 file has a ini file of same name
     def test_video_predict(self):
         
         #arange
