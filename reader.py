@@ -27,10 +27,14 @@ if __name__ == "__main__":
 
     #Starts gui if given in args, else start video read
     if args.gui:
-        gui = Gui(file_path, x_res, y_res, display_amount)
-        gui.setup_gui()
-        gui.start()
-        gui.root.mainloop()
+
+        if 640 > x_res or y_res < 480:
+            print("Camera res too low. x_res min 640, y_res min 480")
+        else:
+            gui = Gui(file_path, x_res, y_res, display_amount)
+            gui.setup_gui()
+            gui.start()
+            gui.root.mainloop()
     else:
         video_reader = VideoReader(file_path, video_path)
         video_reader.start()
