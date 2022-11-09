@@ -10,14 +10,17 @@ class TestReadConfig(unittest.TestCase):
     
     def test_train_and_read(self):
         
+
+
         #Arrange
         SHAPE = 126
         LENGTH = 2
         ACTIONS = np.array(['A', 'B'])
-        VIDEO_AMOUNT = count_videos(ACTIONS)
-
+        VIDEO_PATH = "Training_videos"
+        VIDEO_AMOUNT = count_videos(VIDEO_PATH, ACTIONS)
+        
         #Act
-        extract_data(ACTIONS, VIDEO_AMOUNT, LENGTH, "MP_Data", SHAPE)
+        extract_data(ACTIONS, VIDEO_AMOUNT, LENGTH, "MP_Data", SHAPE, VIDEO_PATH)
         model = YubiModel(2, SHAPE, ACTIONS, "MP_Data")
         model.train_model(1, VIDEO_AMOUNT, 1)
         configRead = Model(model.timestamp)

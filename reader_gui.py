@@ -13,7 +13,7 @@ class Gui:
         self.root = tk.Tk()
         self.x_res = x_res
         self.y_res = y_res
-        self.cap = cv2.VideoCapture(0, apiPreference=cv2.CAP_ANY, params=[cv2.CAP_PROP_FRAME_WIDTH, x_res,
+        self.cap = cv2.VideoCapture(0, cv2.CAP_DSHOW, params=[cv2.CAP_PROP_FRAME_WIDTH, x_res,
             cv2.CAP_PROP_FRAME_HEIGHT, y_res])
         self.mp_holistic = mp.solutions.holistic
         self.mp_drawing = mp.solutions.drawing_utils
