@@ -11,8 +11,6 @@ class TestReader(unittest.TestCase):
     def test_video_predict(self):
         
         #arange
-        desired_length = 10
-        actions = actions = np.array(['A', 'B', 'C', 'D', 'E', 'Idle'])
         file_path = 'epoch_400_frames_10'
         video_path = 'Test_video.mov'
 

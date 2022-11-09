@@ -4,7 +4,7 @@ from model import *
 from extract_datapoints import count_videos
 import linecache
 
-#a requirement for this test is having training data extracted from video sources
+#a requirement for this test is having training data extracted from video sources with 15 frames hands only
 class TestEarlyStopping(unittest.TestCase):
 
     def test_earlystopping(self):
