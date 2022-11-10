@@ -22,7 +22,7 @@ class Gui:
         self.actions = self.model.actions
 
         #Makes sure that display_amount isn't too high
-        if 1 > display_amount > len(self.actions):
+        if not 1 < display_amount < len(self.actions):
             self.display_amount = 5
         else:
             self.display_amount = display_amount
