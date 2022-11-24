@@ -1,7 +1,4 @@
-  
-  
-  
-  
+
 # Danish Sign Language Detection  
   
 *this project is still in development, certain things are subject to change during the course of development. Please read [our roadmap](#roadmap) for upcoming features and fixes.*  
@@ -185,6 +182,9 @@ Trainer takes certain arguments to customize which keypoints are extracted and t
 - ``--gui <boolean>``: launches the gui for training and extraction
 - ``--face <boolean>``: tells extractor and trainer to extract/expect face keypoints. Default = False
 - ``--pose <boolean>`` tells extractor and trainer to extract/expect pose keypoints. Default = False
+- ``--frames <int>`` sets amount of frames that are to be extracted from videos Default = 1
+- ``--epochs<int>`` sets amount of epochs used for training Default = 1
+- ``--seed<int>`` sets the seed used to split test and training data Default = 1
 - ``--path <str>`` sets the path for videos used for training. Default = "Training_videos"
 - ``--actionset <str>`` tells extractor and trainer which action set to use. Default = Default  
 
@@ -220,15 +220,38 @@ python Training.py
   
 Note: Always train on the same amount of keypoints as extracted. If you want to train with more or less keypoints you need to extract again with the correct parameters.
   
-**Further customization, like setting epocs, video_length and customizing folders is planned features**  
-  
-  
+ 
   
 ## Trainer - GUI  
   
-*Planned Feature*  
+The trainer gui is launched by using
+
+ ```  
   
+python Training.py --gui  
   
+``` 
+ 
+ ![](https://i.imgur.com/qBhbz6K.png)
+ Action set: options are 
+ - "Default" containing ("A", "B", "C", "D", "E", "IDLE")
+ - "Yubi-yay" containing all of Default and ("DROPPER", "HUE", "HVOR", "JUBILÆUM", "SEJR")
+**If you are only training make sure that the extracted data matches.**
+ 
+Frame amount: is the amount of frames there is going to be extracted per video, and how many numpy the model trains on. **If you are only training make sure that the extracted data matches.**
+
+Epocs: is how many epocs the model is going to train for.
+
+Seed: is the seed used to split the training data into training and verifying  data.
+
+Extract & train: enables or disables extraction
+
+Key points: choose the keypoint you want to use  **If you are only training make sure that the extracted data matches.**
+
+Select Video Folder: if you have your videos in a different folder you can select that instead.
+
+Select Extract Folder: If you want to extract data to a different folder or already have extracted data in a different folder, you can select that instead.
+
   
 ## Reader  
   
@@ -236,20 +259,45 @@ The reader is launched by using
   
 ```  
   
-python Webcam.py  
+python reader.py  
   
 ```  
   
+
+### Reader Parameters  
+- ``--gui <boolean>``: launches the gui for reader
+- ``--filepath <boolean>``: sets the path to the model(.h5) and config(.ini) Default = "epoch_400_frames_10" **Make sure that your model and config for that model is in the same folder and has the same name**
+- ``--xres<int>`` Sets the width of the camera resolution min = 640, Default = 640
+- ``--yres<int>`` Sets the height of the camera resolution min = 480, Default = 480
+- ``--displayamount<int>`` Sets the amount of actions displayed at a time in the gui min = 1, Default = 5
+- ``--videopath<str>`` Sets the path to the video that is going to be read Default = "Test_video.mov"
+
+**If gui is not in parameters then it will try to read the video, if gui is in the parameters it will read from webcam not video**
+
+Example:  
   
-  
-which automatically loads a model under a specific name at the moment, this is subject to change very soon.  
-  
-  
+``python reader.py --gui --filepath 'new_model' --xres 1920 --yres 1080``
+In the above example, the reader will be launched with gui, a model named new_model.h5 and its config file new_model.ini are loaded, and the cameras resolution is set to 1920*1080 (1080p). Note that new_model.h5 and new_model.ini are in the same folder as reader.py.
   
 ## Reader - GUI  
+
+The reader gui is launched by using 
+
+ ```  
   
-*Planned Feature*  
+python reader.py --gui  
   
+``` 
+  
+![](https://i.imgur.com/8JvvG9s.png)
+In the top of the image is the sentence bar it will write your 5 last signs
+
+The signs displayed on the left are the 5 signs the model thinks are most likely to be displayed in percentages. The parameter ``--displayamount<int>`` changes the amount of signs displayed.
+
+Display landmarks: draws the landmarks from hands, pose, and face on the image
+
+Save as text file: Saves the current sentence to a text file
+
   
   
 # Roadmap  
@@ -260,7 +308,7 @@ which automatically loads a model under a specific name at the moment, this is s
   
 - [x] Create Recorder software  
   
-- [x] Add functionality for Reader to read video files instead of webcam files  
+- [x] Add functionality for Reader to also read video files  
   
 - [ ] Creation of a bigger dataset  
   
