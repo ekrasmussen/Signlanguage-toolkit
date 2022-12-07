@@ -92,7 +92,7 @@ class YubiModel:
             #maps labels to numbers
             label_map = {label:num for num, label in enumerate(self.actions)}
 
-            #creates to lists
+            #creates two lists
             sequences, labels = [], []
             i = 0
             #goes through actions
@@ -102,7 +102,7 @@ class YubiModel:
 
                 #goes through sequences
                 for sequence in range(no_sequences):
-                    #creates list for of frames for a sequence
+                    #creates list of frames for a sequence
                     window = []
                     #goes through sequences
                     for frame_num in range(self.desired_length):
@@ -126,11 +126,9 @@ class YubiModel:
             #random_state sets seed value to allow for comparison of different neural networks
             X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=seed)
 
-            #sets path for log file
-            log_dir = os.path.join('Logs')
             #sets condition for earlystopping
-            #monitor val_loss
-            #mode is set to min to stop when val_loss stops descreasing 
+            #monitor loss
+            #mode is set to min to stop when loss stops descreasing 
             #patience sets number of epochs after which training will be stopped
             #restore_best_weights restores best weights after stopping
             earlystopping = EarlyStopping(monitor = 'loss', min_delta = 0,  patience = 20, verbose = 0, mode = 'auto', baseline = None, restore_best_weights = True)
@@ -168,4 +166,3 @@ class YubiModel:
 
         with open(f'{self.timestamp}.ini', 'w') as configfile:
             config.write(configfile)
-

@@ -9,7 +9,6 @@ from training_gui import *
 data_path= os.path.join('MP_Data')
 
 #actions we try to detect
-
 ACTIONSDICT = {"Default": np.array(['A', 'B', 'C', 'D', 'E', 'Idle']), "Yubi-yay": np.array(['A', 'B', 'C', 'D', 'E', 'Idle','Dropper', 'Hue', 'Hvor', 'Jubilæum', 'Sejr'])}
 
 def check_values(desired_length, seed, epochs_amount, actionset):
