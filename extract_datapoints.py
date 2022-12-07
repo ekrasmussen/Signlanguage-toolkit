@@ -10,10 +10,10 @@ from threading import Event
 def count_videos(video_path, actions):
     print("Counting Videos...")
     video_amount = np.zeros(actions.size, dtype=int)
-    i = 0
-    for action in actions:
-        video_amount[i] = len(os.listdir(f'{video_path}\{action}'))
-        i += 1
+
+    #Counting videos in each label in the dataset
+    for action in range(len(actions)):
+        video_amount[action] = len(os.listdir(f'{video_path}\{actions[action]}'))
     return video_amount
 
 #Check if the event passed from the gui has been set. If so, return True
@@ -27,16 +27,15 @@ def is_stop_requested(event):
 
 def extract_data(actions, video_amount, desired_length, data_path, shape_size, video_path, stop_event = Event()):
     #create folder for each action
-    i = 0
-    for action in actions:
-        no_sequences = video_amount[i]
+
+    for action in range(len(actions)):
+        no_sequences = video_amount[action]
         #use video in video_list at some point Look down below for help
         for sequence in range (no_sequences):  
             try:
-                os.makedirs(os.path.join(data_path, action, str(sequence)))
+                os.makedirs(os.path.join(data_path, actions[action], str(sequence)))
             except:
                 pass #THROW EXCEPTIONS HERE!
-        i += 1
 
     mp_holistic = mp.solutions.holistic 
 
