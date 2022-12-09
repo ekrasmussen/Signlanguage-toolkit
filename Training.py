@@ -6,7 +6,7 @@ from extract_datapoints import *
 from training_gui import *
 
 #path for exported data
-data_path= os.path.join('MP_Data')
+data_path = os.path.join('MP_Data')
 
 #actions we try to detect
 ACTIONSDICT = {"Default": np.array(['A', 'B', 'C', 'D', 'E', 'Idle']), "Yubi-yay": np.array(['A', 'B', 'C', 'D', 'E', 'Idle','Dropper', 'Hue', 'Hvor', 'Jubilæum', 'Sejr'])}
