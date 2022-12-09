@@ -89,7 +89,7 @@ class YubiModel:
     
     def train_model(self, epochs_amount, videoAmount, seed, stop_event = Event()):
         if not stop_event.is_set():
-            #maps labels to numbers
+            #maps labels to numbers in a dictionary
             label_map = {label:num for num, label in enumerate(self.actions)}
 
             #creates two lists
@@ -117,7 +117,7 @@ class YubiModel:
 
                 i += 1
             
-                #set X for model training
+            #set X for model training
             X = np.array(sequences)
             #set y for model training
             y = to_categorical(labels).astype(int)
