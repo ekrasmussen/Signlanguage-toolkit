@@ -52,6 +52,10 @@ class Gui:
 
     # Draws the signs and draws their probabilities
     def prob_viz(self, res, input_frame):
+        #               Modified version of prob_viz method inspired by Nicolas Renottes action recognition guide
+        #               Source link: https://www.youtube.com/watch?v=doDUihpj6ro
+        #               Nicolas' Github: https://github.com/nicknochnack
+        
         action_prob = []
         #Enumerates over the results to create a 2d list of actions index and their confidence score
         for num, prob in enumerate(res):

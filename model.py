@@ -26,6 +26,10 @@ class YubiModel:
         self.n_epochs = 0
        
     def create_model(self):
+        #               Original Model inspired by Nicolas Renottes action recognition guide
+        #               Source link: https://www.youtube.com/watch?v=doDUihpj6ro
+        #               Nicolas' Github: https://github.com/nicknochnack
+        
         #sets up sequential layers in neural network
         model = Sequential()
         #adds a LSTM layer with 64 nodes, returns a sequence, uses relu activation, and input shape
