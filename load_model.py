@@ -33,13 +33,14 @@ class Model:
         #               Original Model inspired by Nicolas Renottes action recognition guide
         #               Source link: https://www.youtube.com/watch?v=doDUihpj6ro
         #               Nicolas' Github: https://github.com/nicknochnack
+      
         model = Sequential()
-        model.add(GRU(64, return_sequences=True, activation='relu', input_shape=(self.desired_length, self.shape)))
-        model.add(GRU(128, return_sequences=True, activation='relu'))
-        model.add(GRU(64, return_sequences=False, activation='relu'))       #This line will have return_sequenecs set to False, because the next layer is a dense-layer so we need to not return the sequences to that layer
+        model.add(LSTM(64, return_sequences=True, activation='relu', input_shape=(self.desired_length, self.shape)))
+        model.add(LSTM(128, return_sequences=True, activation='relu'))
+        model.add(LSTM(64, return_sequences=False, activation='relu'))       #This line will have return_sequenecs set to False, because the next layer is a dense-layer so we need to not return the sequences to that layer
         model.add(Dense(64, activation='relu'))
         model.add(Dense(32, activation='relu'))
-        model.add(Dense(self.actions.shape[0], activation='softmax'))       #This line is going to return values that are within 0-1 and with the sums of all values returned adding up to 1
+        model.add(Dense(self.actions.shape[0], activation='softmax'))       #This line is going to return values that are within 0-1 and with the sums of all values returned adding up to 1, because of softmax
         model.summary()
         model.load_weights(f'{file_path}.h5')
         return model
