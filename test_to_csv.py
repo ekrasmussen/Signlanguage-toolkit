@@ -6,6 +6,7 @@ class TestToCSVFuctions(unittest.TestCase):
     
     
     def test_confusion_matrix(self):
+        # Arrange
         model = YubiModel(15,126,np.array(['A', 'B', 'C', 'D', 'E', 'Idle']), os.path.join('MP_Data'), is_test = True)
         confusion_matrix = [[[45, 1],
                             [1,8]],
@@ -20,7 +21,11 @@ class TestToCSVFuctions(unittest.TestCase):
                             [[78, 1],
                             [1,2]]]
         previous = len(os.listdir(model.logs_path))
+
+        # Act
         model.save_confusion_matrix(confusion_matrix)
+
+        # Assert
         self.assertGreater(len(os.listdir(model.logs_path)), previous)
 
 if __name__ == '__main__':
