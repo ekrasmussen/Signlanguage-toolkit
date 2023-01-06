@@ -52,7 +52,7 @@ def webcam_record(labels, fps, recordtime, breaktime, amount, output):
             for video_number in range(amount):
                 #VideoWriter writes to storage
                 #Uses parameters: path for videos, video codec, frame rate, and image dimensions
-                result = cv2.VideoWriter(f"{output}/{label}/{video_number}.mp4", cv2.VideoWriter.fourcc('m','p','4','v'), fps, (camera_width, camera_height))
+                result = cv2.VideoWriter(os.path.join(output, label, f"{video_number}.mp4"), cv2.VideoWriter.fourcc('m','p','4','v'), fps, (camera_width, camera_height))
                 #Loops through frames of video
                 for frame in range(recordtime + breaktime):
                     #Gets boolean and frame

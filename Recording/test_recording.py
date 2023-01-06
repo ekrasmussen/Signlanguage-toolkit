@@ -21,8 +21,8 @@ class TestsForRecording(unittest.TestCase):
         videoAmount = np.zeros(labels.size, dtype=int)
         i = 0
         test_video_amount = 0
-        for label in labels:
-            videoAmount[i] = len(os.listdir(f'Recordings_test\{label}'))
+        for label in labels: 
+            videoAmount[i] = len(os.listdir(os.path.join("Recordings_text", label)))
             test_video_amount += videoAmount[i]
             i += 1
 
