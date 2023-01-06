@@ -10,8 +10,6 @@ class TestReadConfig(unittest.TestCase):
     
     def test_train_and_read(self):
         
-
-
         #Arrange
         SHAPE = 126
         LENGTH = 2
@@ -29,8 +27,6 @@ class TestReadConfig(unittest.TestCase):
         self.assertEqual(configRead.shape, SHAPE)
         self.assertEqual(configRead.desired_length, LENGTH)
         self.assertTrue((ACTIONS == configRead.actions).all())
-
-
 
     
 if __name__ == '__main__':
