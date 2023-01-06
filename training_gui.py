@@ -155,18 +155,18 @@ class Gui:
     
     def execute_train(self, should_extract_data, clicked, frames, epochs, seed, shape_size):
         actions = self.actions_dictionary[clicked.get()]
-        #try:    
-        videos = count_videos(self.videos_path, actions)
-        desired_length = frames.get()
-        epochs_amount = epochs.get()
-        seed = seed.get()
+        try:    
+            videos = count_videos(self.videos_path, actions)
+            desired_length = frames.get()
+            epochs_amount = epochs.get()
+            seed = seed.get()
 
-        if should_extract_data.get():
-            extract_data(actions, videos, desired_length, self.data_path, shape_size, self.videos_path, self.stop_event)
-        model = YubiModel(desired_length, shape_size, actions, self.data_path)
-        model.train_model(epochs_amount, videos, seed, self.stop_event)
-        #except:
-            #print('Error! Something went wrong.')
+            if should_extract_data.get():
+                extract_data(actions, videos, desired_length, self.data_path, shape_size, self.videos_path, self.stop_event)
+            model = YubiModel(desired_length, shape_size, actions, self.data_path)
+            model.train_model(epochs_amount, videos, seed, self.stop_event)
+        except:
+            print('Error! Something went wrong when counting videos/extracting.')
     
     def select_input_directory(self):
         directory = filedialog.askdirectory(title="Select directory for recorded videos")
