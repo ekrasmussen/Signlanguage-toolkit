@@ -13,7 +13,7 @@ def count_videos(video_path, actions):
 
     #Counting videos in each label in the dataset
     for action in range(len(actions)):
-        video_amount[action] = len(os.listdir(f'{video_path}\{actions[action]}'))
+        video_amount[action] = len(os.listdir(os.path.join(video_path, actions[action])))
     return video_amount
 
 #Check if the event passed from the gui has been set. If so, return True
@@ -48,7 +48,7 @@ def extract_data(actions, video_amount, desired_length, data_path, shape_size, v
                 break
 
             #gets list of videos
-            video_list = os.listdir(f'{video_path}\{action}')
+            video_list = os.listdir(os.path.join(video_path, action))
 
             video_number = 0
 
