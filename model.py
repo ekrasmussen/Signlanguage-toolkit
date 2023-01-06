@@ -58,9 +58,9 @@ class YubiModel:
         #creates the folder with corresponding timestamp inside the logs folder
         logs_path = ""
         if not self.is_test:
-            logs_path = f"Logs/{timestamp}"
+            logs_path = os.path.join('Logs', timestamp)
         else:
-            logs_path = f"Logs/{timestamp}_test"
+            logs_path = os.path.join('Logs', f"{timestamp}_test")
         
         try:
             os.makedirs(logs_path)
@@ -80,14 +80,15 @@ class YubiModel:
     
     def save_confusion_matrix(self, confusion_matrix):
         #convert and save confusion matrix individually by action
-        with pd.ExcelWriter(f"{self.logs_path}/confusion_matrix.xlsx") as writer:
+        with pd.ExcelWriter(os.path.join(f"{self.logs_path}", "confusion_matrix.xlsx")) as writer:
             for matrix in range(0, len(confusion_matrix)):
                 cmdf = pd.DataFrame([confusion_matrix[matrix][0], confusion_matrix[matrix][1]], index=['Positive','Negative'], columns=['Positive','Negative'])
                 cmdf.to_excel(writer, sheet_name=self.actions[matrix])
 
     def save_training_info(self, accuracy, seed):
         #saves accuracy score as a simple txt file
-        file = open(f"{self.logs_path}/training_info.txt", "w+")
+        
+        file = open(os.path.join(f"{self.logs_path}", "training_info.txt"), "w+")
         file.write(f"Accuracy: {accuracy}\nDesired length: {self.desired_length}\nEpochs: {self.n_epochs}\nSeed: {seed}")
         file.close()
     

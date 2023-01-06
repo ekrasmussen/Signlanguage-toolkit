@@ -10,7 +10,7 @@ class TestReader(unittest.TestCase):
     #Requirement is for the corresponding h5 file has a ini file of same name
     def test_video_predict(self):
         
-        #arange
+        #arrange
         file_path = 'epoch_400_frames_10'
         video_path = 'Test_video.mov'
 
@@ -18,7 +18,7 @@ class TestReader(unittest.TestCase):
 
         #act
         dt_string = video_reader.start()
-        with open(f'Sentences\Sentence_{dt_string}.txt') as f:
+        with open(os.path.join("Sentences", f"Sentence_{dt_string}.txt")) as f:
             line = f.readline()
         print(f'line {line}')
 

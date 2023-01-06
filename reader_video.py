@@ -45,7 +45,6 @@ class VideoReader:
 
     #Saves the sentence in a txt document
     def save_to_text(self, dt_string):
-
-        with open(f'Sentences\Sentence_{dt_string}.txt', 'a') as f:
+        with open(os.path.join('Sentences', f"Sentence_{dt_string}.txt"), 'a') as f:
             f.write(f'{self.model.sentence} \n')
             f.close()
