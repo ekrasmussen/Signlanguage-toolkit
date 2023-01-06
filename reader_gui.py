@@ -2,6 +2,7 @@ import tkinter as tk
 import mediapipe as mp
 from datetime import datetime
 import cv2
+import os
 from PIL import Image, ImageTk
 from detect import *
 from load_model import *
@@ -87,7 +88,7 @@ class Gui:
     def save_to_text(self):
         now = datetime.now()
         dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
-        with open('Sentences\Sentences.txt', 'a') as f:
+        with open(os.path.join('Sentences', 'Sentences.txt'), 'a') as f:
             f.write(f'{dt_string}:{self.model.sentence} \n')
             f.close()
    
