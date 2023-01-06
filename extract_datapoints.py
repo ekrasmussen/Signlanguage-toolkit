@@ -59,7 +59,7 @@ def extract_data(actions, video_amount, desired_length, data_path, shape_size, v
                         break
 
                     #grabs video
-                    cap = cv2.VideoCapture(f'{video_path}\{action}\{video}')
+                    cap = cv2.VideoCapture(os.path.join(video_path, action, video))
                     #counts amount of frames in video
                     video_length = cap.get(cv2.CAP_PROP_FRAME_COUNT)
                     #if video is shorter than desired amount of frames start frame is set to 0
@@ -91,7 +91,7 @@ def extract_data(actions, video_amount, desired_length, data_path, shape_size, v
                         
                         #sets path for numpy array
                         #npy_path = os.path.join(DATA_PATH, action, str(video), str(frame_num))
-                        npy_path = f'{data_path}\{action}\{video_number}\{frame_num}'
+                        npy_path = os.path.join(data_path, action, str(video_number), str(frame_num))
                         
                         #saves numpy array with keypoints
                         np.save(npy_path, keypoints)
