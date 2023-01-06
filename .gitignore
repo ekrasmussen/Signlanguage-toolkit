@@ -1,5 +1,7 @@
 ﻿MP_Data
 Training_videos
 *.mp4
+*.ini
+*.h5
 Logs
 __pycache__
