@@ -7,6 +7,7 @@ class TestSaveConfigFile(unittest.TestCase):
 
     def test_save_config(self):
         # Arrange
+        actions_list = str(['A', 'B', 'C', 'D', 'E', 'Idle'])
         model = YubiModel(15, 126,np.array(['A', 'B', 'C', 'D', 'E', 'Idle']), os.path.join('MP_Data'), is_test = True)
         config = configparser.ConfigParser()
 
@@ -18,8 +19,6 @@ class TestSaveConfigFile(unittest.TestCase):
         length = config['Model']['Length']
         shape = config['Model']['Shape']
         actions = config['Model']['Actions set']
-
-        actions_list = str(['A', 'B', 'C', 'D', 'E', 'Idle'])
 
         # Assert
         self.assertEqual(length, str(15)) 
