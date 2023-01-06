@@ -47,6 +47,10 @@ class Model:
 
     #Updates the sentence 
     def sentence_update(self, res): 
+        #               Inspired by Nicolas Renottes action recognition guide
+        #               Source link: https://www.youtube.com/watch?v=doDUihpj6ro
+        #               Nicolas' Github: https://github.com/nicknochnack
+        
         print(f'res {res}')
         if np.unique(self.predictions[-10:])[0]==np.argmax(res): 
             if res[np.argmax(res)] > self.threshold: #res[np.argmax(res)] is grabbing the threshold. Checks whether or not res is above threshold 
@@ -62,6 +66,9 @@ class Model:
 
     #Gives a prediction based on given keypoint.
     def predict(self, keypoints):
+        #               Inspired by Nicolas Renottes action recognition guide
+        #               Source link: https://www.youtube.com/watch?v=doDUihpj6ro
+        #               Nicolas' Github: https://github.com/nicknochnack
         self.sequence.append(keypoints) #Appending keypoints to sequence
         self.sequence = self.sequence[-self.desired_length:]
         
