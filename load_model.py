@@ -30,9 +30,9 @@ class Model:
 
     #Creates/loads model. file_path is the path to the h5 file 
     def load_model(self, file_path):
-        #               Original Model inspired by Nicolas Renottes action recognition guide
+        #               Original Model inspired by Nicholas Renottes action recognition guide
         #               Source link: https://www.youtube.com/watch?v=doDUihpj6ro
-        #               Nicolas' Github: https://github.com/nicknochnack
+        #               Nicholas' Github: https://github.com/nicknochnack
       
         model = Sequential()
         model.add(LSTM(64, return_sequences=True, activation='relu', input_shape=(self.desired_length, self.shape)))
@@ -47,9 +47,9 @@ class Model:
 
     #Updates the sentence 
     def sentence_update(self, res): 
-        #               Inspired by Nicolas Renottes action recognition guide
+        #               Inspired by Nicholas Renottes action recognition guide
         #               Source link: https://www.youtube.com/watch?v=doDUihpj6ro
-        #               Nicolas' Github: https://github.com/nicknochnack
+        #               Nicholas' Github: https://github.com/nicknochnack
         
         print(f'res {res}')
         if np.unique(self.predictions[-10:])[0]==np.argmax(res): 
@@ -66,9 +66,9 @@ class Model:
 
     #Gives a prediction based on given keypoint.
     def predict(self, keypoints):
-        #               Inspired by Nicolas Renottes action recognition guide
+        #               Inspired by Nicholas Renottes action recognition guide
         #               Source link: https://www.youtube.com/watch?v=doDUihpj6ro
-        #               Nicolas' Github: https://github.com/nicknochnack
+        #               Nicholas' Github: https://github.com/nicknochnack
         self.sequence.append(keypoints) #Appending keypoints to sequence
         self.sequence = self.sequence[-self.desired_length:]
         

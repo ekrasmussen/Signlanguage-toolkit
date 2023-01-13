@@ -26,9 +26,9 @@ class YubiModel:
         self.n_epochs = 0
        
     def create_model(self):
-        #               Original Model inspired by Nicolas Renottes action recognition guide
+        #               Original Model inspired by Nicholas Renottes action recognition guide
         #               Source link: https://www.youtube.com/watch?v=doDUihpj6ro
-        #               Nicolas' Github: https://github.com/nicknochnack
+        #               Nicholas' Github: https://github.com/nicknochnack
         
         #sets up sequential layers in neural network
         model = Sequential()
