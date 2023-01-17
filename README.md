@@ -1,7 +1,7 @@
 
 # Danish Sign Language Detection  
   
-*this project is still in development, certain things are subject to change during the course of development. Please read [our roadmap](#roadmap) for upcoming features and fixes.*  
+*this project is still in development, certain things are subject to change during the course of development. Please read [our roadmap](#roadmap) for upcoming features and fixes. The project has been created for the 4th semester exam in computer science at UCN*  
   
   
   
